@@ -10,11 +10,10 @@
             --card-bg: #ffffff;
             --text-main: #1a202c;
             --text-muted: #718096;
-            --primary: #e53e3e;
-            --primary-hover: #c53030;
+            --primary: #2b8a3e; /* Changed to Green */
+            --primary-hover: #236c31;
             --danger: #dc3545;
             --danger-hover: #bd2130;
-            --accent: #3182ce;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
             --radius: 16px;
         }
@@ -34,14 +33,10 @@
 
         header h1 {
             margin: 0 0 8px 0;
-            color: var(--text-main);
+            color: var(--primary); /* Green Kindex Title */
             font-size: 3rem;
             letter-spacing: -0.5px;
             font-weight: 800;
-        }
-
-        header h1 span {
-            color: var(--primary);
         }
 
         header p {
@@ -50,7 +45,6 @@
             font-size: 1.1rem;
         }
 
-        /* Hidden by default, shown only in admin mode */
         .admin-controls {
             display: none;
             justify-content: center;
@@ -82,7 +76,7 @@
 
         input[type="text"]:focus, select:focus, input[type="number"]:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1);
+            box-shadow: 0 0 0 4px rgba(43, 138, 62, 0.15);
         }
 
         .btn {
@@ -99,6 +93,10 @@
 
         .btn:hover {
             background-color: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
         }
 
         .btn-danger {
@@ -141,7 +139,7 @@
         .card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
-            border-color: rgba(229, 62, 62, 0.2);
+            border-color: rgba(43, 138, 62, 0.2);
         }
 
         .card img {
@@ -263,7 +261,7 @@
 
         /* Stat Bars Styling */
         .stats-container {
-            margin-top: 25px;
+            margin-top: 20px;
             text-align: left;
             background: #f8fafc;
             padding: 20px;
@@ -271,20 +269,35 @@
             border: 1px solid #edf2f7;
         }
 
+        .stats-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
         .stats-container h4 {
-            margin: 0 0 15px 0;
-            text-align: center;
+            margin: 0;
             font-size: 0.85rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
+        .bst-badge {
+            background: #e6f4ea;
+            color: #137333;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
         .stat-row {
             display: flex;
             align-items: center;
             font-size: 0.85rem;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .stat-name {
@@ -310,7 +323,7 @@
 
         .stat-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), #ff6b6b);
+            background: linear-gradient(90deg, var(--primary), #51cf66);
             border-radius: 6px;
         }
 
@@ -363,10 +376,9 @@
 <body>
 
     <header>
-        <h1>K<span>index</span></h1>
+        <h1>Kindex</h1>
         <p>Explore and search the official Wildkin catalog</p>
         
-        <!-- Admin Controls (Unlocked via Secret URL) -->
         <div class="admin-controls" id="adminControls">
             <button class="btn" onclick="openAddModal()">+ Add New Wildkin</button>
             <button class="btn btn-outline" onclick="resetToDefaults()">Reset Defaults</button>
@@ -404,18 +416,21 @@
     <div class="modal" id="detailModal" onclick="closeModal(event, 'detailModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModalDirect('detailModal')">&times;</button>
-            <img id="modalImg" src="" alt="">
+            <!-- onerror handles broken image links automatically -->
+            <img id="modalImg" src="" alt="" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
             <p id="modalNumber" class="number"></p>
             <h2 id="modalName" style="margin: 5px 0 12px 0;"></h2>
             <div id="modalBadges" class="badges" style="margin-bottom: 18px;"></div>
             <p id="modalDescription" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;"></p>
             
             <div class="stats-container">
-                <h4>Base Stats</h4>
+                <div class="stats-header-flex">
+                    <h4>Base Stats</h4>
+                    <span id="modalBst" class="bst-badge">BST: 0</span>
+                </div>
                 <div id="modalStats"></div>
             </div>
 
-            <!-- Admin Delete Button (Only visible in admin mode) -->
             <div id="adminDeleteContainer" style="margin-top: 20px; text-align: right; display: none;">
                 <button class="btn btn-danger" onclick="deleteCurrentWildkin()">Delete Wildkin</button>
             </div>
@@ -559,8 +574,6 @@
         let wildkinList = JSON.parse(localStorage.getItem('kindex_wildkin')) || defaultWildkin;
         let currentSelectedId = null;
 
-        // --- ADMIN AUTHENTICATION LOGIC ---
-        // Change 'mySecretKey123' to whatever secret password or phrase you prefer!
         const ADMIN_SECRET = "mySecretKey123"; 
 
         function checkAdminAccess() {
@@ -576,7 +589,6 @@
                 document.getElementById('adminDeleteContainer').style.display = 'block';
             }
         }
-        // ----------------------------------
 
         const grid = document.getElementById('wildkinGrid');
         const searchInput = document.getElementById('searchInput');
@@ -598,7 +610,7 @@
 
                 card.innerHTML = `
                     <span class="number">${mon.number}</span>
-                    <img src="${mon.img}" alt="${mon.name}">
+                    <img src="${mon.img}" alt="${mon.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
                     <h3>${mon.name}</h3>
                     <div class="badges">${badgesHtml}</div>
                 `;
@@ -627,98 +639,4 @@
             document.getElementById('modalDescription').innerText = mon.description;
             
             const badgesContainer = document.getElementById('modalBadges');
-            badgesContainer.innerHTML = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
-
-            const statsContainer = document.getElementById('modalStats');
-            const statLabels = { hp: 'HP', attack: 'Attack', defense: 'Defense', spatk: 'Sp. Atk', spdef: 'Sp. Def', speed: 'Speed' };
-            
-            statsContainer.innerHTML = Object.entries(mon.stats).map(([key, val]) => {
-                const percentage = Math.min(Math.round((val / 150) * 100), 100);
-                return `
-                    <div class="stat-row">
-                        <span class="stat-name">${statLabels[key]}</span>
-                        <span class="stat-value">${val}</span>
-                        <div class="stat-bar-bg">
-                            <div class="stat-bar-fill" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        function deleteCurrentWildkin() {
-            if (confirm("Are you sure you want to delete this Wildkin?")) {
-                wildkinList = wildkinList.filter(mon => mon.id !== currentSelectedId);
-                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
-                filterWildkin();
-                closeModalDirect('detailModal');
-            }
-        }
-
-        function resetToDefaults() {
-            if (confirm("Reset all Wildkin back to the default list? Custom additions will be cleared.")) {
-                wildkinList = JSON.parse(JSON.stringify(defaultWildkin));
-                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
-                searchInput.value = '';
-                typeFilter.value = '';
-                renderGrid(wildkinList);
-            }
-        }
-
-        function openAddModal() {
-            document.getElementById('addWildkinForm').reset();
-            document.getElementById('addModal').style.display = 'flex';
-        }
-
-        function closeModalDirect(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        function closeModal(e, modalId) {
-            if (e.target.id === modalId) {
-                document.getElementById(modalId).style.display = 'none';
-            }
-        }
-
-        function handleFormSubmit(e) {
-            e.preventDefault();
-
-            const type1 = document.getElementById('addType1').value;
-            const type2 = document.getElementById('addType2').value;
-            let types = [type1];
-            if (type2 && type2 !== type1) {
-                types.push(type2);
-            }
-
-            const newWildkin = {
-                id: Date.now(),
-                number: document.getElementById('addNumber').value,
-                name: document.getElementById('addName').value,
-                types: types,
-                img: document.getElementById('addImg').value,
-                description: document.getElementById('addDesc').value,
-                stats: {
-                    hp: parseInt(document.getElementById('statHp').value),
-                    attack: parseInt(document.getElementById('statAttack').value),
-                    defense: parseInt(document.getElementById('statDefense').value),
-                    spatk: parseInt(document.getElementById('statSpatk').value),
-                    spdef: parseInt(document.getElementById('statSpdef').value),
-                    speed: parseInt(document.getElementById('statSpeed').value)
-                }
-            };
-
-            wildkinList.push(newWildkin);
-            localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
-            
-            filterWildkin();
-            closeModalDirect('addModal');
-        }
-
-        // Initialize grid and check permissions on load
-        renderGrid(wildkinList);
-        checkAdminAccess();
-    </script>
-</body>
-</html>
+            badgesContainer.innerHTML = mon.types.map
