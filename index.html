@@ -10,7 +10,7 @@
             --card-bg: #ffffff;
             --text-main: #1a202c;
             --text-muted: #718096;
-            --primary: #2b8a3e; /* Changed to Green */
+            --primary: #2b8a3e;
             --primary-hover: #236c31;
             --danger: #dc3545;
             --danger-hover: #bd2130;
@@ -33,7 +33,7 @@
 
         header h1 {
             margin: 0 0 8px 0;
-            color: var(--primary); /* Green Kindex Title */
+            color: var(--primary);
             font-size: 3rem;
             letter-spacing: -0.5px;
             font-weight: 800;
@@ -416,7 +416,6 @@
     <div class="modal" id="detailModal" onclick="closeModal(event, 'detailModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModalDirect('detailModal')">&times;</button>
-            <!-- onerror handles broken image links automatically -->
             <img id="modalImg" src="" alt="" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
             <p id="modalNumber" class="number"></p>
             <h2 id="modalName" style="margin: 5px 0 12px 0;"></h2>
