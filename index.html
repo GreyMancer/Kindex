@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fakemon Index</title>
+    <title>Kindex</title>
     <style>
         :root {
             --bg-color: #f4f5f7;
@@ -42,21 +42,45 @@
             gap: 15px;
             margin-bottom: 30px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
-        input[type="text"], select {
+        input[type="text"], select, input[type="number"] {
             padding: 10px 16px;
             font-size: 1rem;
             border: 2px solid #ddd;
             border-radius: var(--radius);
             outline: none;
             transition: border-color 0.2s;
-            width: 280px;
+            width: 250px;
             max-width: 100%;
         }
 
-        input[type="text"]:focus, select:focus {
+        input[type="text"]:focus, select:focus, input[type="number"]:focus {
             border-color: var(--primary);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
         }
 
         .grid {
@@ -75,6 +99,7 @@
             text-align: center;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
 
         .card:hover {
@@ -123,6 +148,9 @@
         .type-normal { background-color: #A8A878; }
         .type-poison { background-color: #A040A0; }
         .type-ghost { background-color: #705898; }
+        .type-psychic { background-color: #F85888; }
+        .type-dragon { background-color: #7038F8; }
+        .type-fighting { background-color: #C03028; }
 
         /* Modal styling */
         .modal {
@@ -134,6 +162,7 @@
             align-items: center;
             padding: 20px;
             overflow-y: auto;
+            z-index: 1000;
         }
 
         .modal-content {
@@ -211,15 +240,61 @@
             height: 100%;
             background-color: var(--primary);
             border-radius: 4px;
-            transition: width 0.4s ease;
+        }
+
+        /* Form styling for adding Fakemon */
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: var(--radius);
+            font-family: inherit;
+            resize: vertical;
+            height: 80px;
+            outline: none;
+        }
+
+        .form-group textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .stats-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stats-inputs .form-group {
+            margin-bottom: 10px;
+        }
+
+        .stats-inputs input {
+            width: 100%;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Fakemon Index</h1>
-        <p>Explore, search, and check out custom creature stats!</p>
+        <h1>Kindex</h1>
+        <p>Explore, search, and manage your custom Fakemon catalog!</p>
+        <button class="btn" onclick="openAddModal()">+ Add New Fakemon</button>
     </header>
 
     <div class="controls">
@@ -228,144 +303,3 @@
             <option value="">All Types</option>
             <option value="Fire">Fire</option>
             <option value="Water">Water</option>
-            <option value="Grass">Grass</option>
-            <option value="Electric">Electric</option>
-            <option value="Poison">Poison</option>
-            <option value="Ghost">Ghost</option>
-        </select>
-    </div>
-
-    <div class="grid" id="fakemonGrid"></div>
-
-    <!-- Detail Modal -->
-    <div class="modal" id="detailModal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-btn" onclick="closeModalDirect()">&times;</button>
-            <img id="modalImg" src="" alt="">
-            <p id="modalNumber" class="number"></p>
-            <h2 id="modalName"></h2>
-            <div id="modalBadges" class="badges" style="margin-bottom: 15px;"></div>
-            <p id="modalDescription" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;"></p>
-            
-            <div class="stats-container">
-                <h4>Base Stats</h4>
-                <div id="modalStats"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const fakemonList = [
-            {
-                id: 1,
-                number: "#001",
-                name: "Sparkit",
-                types: ["Electric"],
-                img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
-                description: "It generates small static charges when it rubs against tall grass. Playful but can give a sharp zap.",
-                stats: { hp: 45, attack: 60, defense: 40, spatk: 65, spdef: 50, speed: 90 }
-            },
-            {
-                id: 2,
-                number: "#002",
-                name: "Aquabat",
-                types: ["Water", "Poison"],
-                img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/41.png",
-                description: "Dwells in damp cave systems. It glides silently over underground lakes hunting for small fish.",
-                stats: { hp: 60, attack: 55, defense: 65, spatk: 45, spdef: 60, speed: 75 }
-            },
-            {
-                id: 3,
-                number: "#003",
-                name: "Leafox",
-                types: ["Grass"],
-                img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-                description: "The leaf on its tail changes color depending on the season and its overall mood.",
-                stats: { hp: 50, attack: 45, defense: 50, spatk: 65, spdef: 65, speed: 60 }
-            }
-        ];
-
-        const grid = document.getElementById('fakemonGrid');
-        const searchInput = document.getElementById('searchInput');
-        const typeFilter = document.getElementById('typeFilter');
-
-        function renderGrid(items) {
-            grid.innerHTML = '';
-            if (items.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No Fakemon found.</p>';
-                return;
-            }
-
-            items.forEach(mon => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => openModal(mon);
-
-                const badgesHtml = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
-
-                card.innerHTML = `
-                    <span class="number">${mon.number}</span>
-                    <img src="${mon.img}" alt="${mon.name}">
-                    <h3>${mon.name}</h3>
-                    <div class="badges">${badgesHtml}</div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function filterFakemon() {
-            const query = searchInput.value.toLowerCase();
-            const selectedType = typeFilter.value;
-
-            const filtered = fakemonList.filter(mon => {
-                const matchesSearch = mon.name.toLowerCase().includes(query) || mon.number.toLowerCase().includes(query);
-                const matchesType = selectedType === "" || mon.types.includes(selectedType);
-                return matchesSearch && matchesType;
-            });
-
-            renderGrid(filtered);
-        }
-
-        function openModal(mon) {
-            document.getElementById('modalImg').src = mon.img;
-            document.getElementById('modalNumber').innerText = mon.number;
-            document.getElementById('modalName').innerText = mon.name;
-            document.getElementById('modalDescription').innerText = mon.description;
-            
-            const badgesContainer = document.getElementById('modalBadges');
-            badgesContainer.innerHTML = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
-
-            // Build stat bars (assuming max normal base stat is around 150-255, we'll scale percentage relative to 150)
-            const statsContainer = document.getElementById('modalStats');
-            const statLabels = { hp: 'HP', attack: 'Attack', defense: 'Defense', spatk: 'Sp. Atk', spdef: 'Sp. Def', speed: 'Speed' };
-            
-            statsContainer.innerHTML = Object.entries(mon.stats).map(([key, val]) => {
-                const percentage = Math.min(Math.round((val / 150) * 100), 100);
-                return `
-                    <div class="stat-row">
-                        <span class="stat-name">${statLabels[key]}</span>
-                        <span class="stat-value">${val}</span>
-                        <div class="stat-bar-bg">
-                            <div class="stat-bar-fill" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        function closeModalDirect() {
-            document.getElementById('detailModal').style.display = 'none';
-        }
-
-        function closeModal(e) {
-            if (e.target.id === 'detailModal') {
-                document.getElementById('detailModal').style.display = 'none';
-            }
-        }
-
-        renderGrid(fakemonList);
-    </script>
-</body>
-</html>
