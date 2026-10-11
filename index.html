@@ -639,4 +639,100 @@
             document.getElementById('modalDescription').innerText = mon.description;
             
             const badgesContainer = document.getElementById('modalBadges');
-            badgesContainer.innerHTML = mon.types.map
+            badgesContainer.innerHTML = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
+
+            const statsContainer = document.getElementById('modalStats');
+            const statLabels = { hp: 'HP', attack: 'Attack', defense: 'Defense', spatk: 'Sp. Atk', spdef: 'Sp. Def', speed: 'Speed' };
+            
+            let totalBst = 0;
+            statsContainer.innerHTML = Object.entries(mon.stats).map(([key, val]) => {
+                totalBst += val;
+                const percentage = Math.min(Math.round((val / 150) * 100), 100);
+                return `
+                    <div class="stat-row">
+                        <span class="stat-name">${statLabels[key]}</span>
+                        <span class="stat-value">${val}</span>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modalBst').innerText = `BST: ${totalBst}`;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function deleteCurrentWildkin() {
+            if (confirm("Are you sure you want to delete this Wildkin?")) {
+                wildkinList = wildkinList.filter(mon => mon.id !== currentSelectedId);
+                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                filterWildkin();
+                closeModalDirect('detailModal');
+            }
+        }
+
+        function resetToDefaults() {
+            if (confirm("Reset all Wildkin back to the default list? Custom additions will be cleared.")) {
+                wildkinList = JSON.parse(JSON.stringify(defaultWildkin));
+                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                searchInput.value = '';
+                typeFilter.value = '';
+                renderGrid(wildkinList);
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById('addWildkinForm').reset();
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function closeModalDirect(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function closeModal(e, modalId) {
+            if (e.target.id === modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const type1 = document.getElementById('addType1').value;
+            const type2 = document.getElementById('addType2').value;
+            let types = [type1];
+            if (type2 && type2 !== type1) {
+                types.push(type2);
+            }
+
+            const newWildkin = {
+                id: Date.now(),
+                number: document.getElementById('addNumber').value,
+                name: document.getElementById('addName').value,
+                types: types,
+                img: document.getElementById('addImg').value,
+                description: document.getElementById('addDesc').value,
+                stats: {
+                    hp: parseInt(document.getElementById('statHp').value),
+                    attack: parseInt(document.getElementById('statAttack').value),
+                    defense: parseInt(document.getElementById('statDefense').value),
+                    spatk: parseInt(document.getElementById('statSpatk').value),
+                    spdef: parseInt(document.getElementById('statSpdef').value),
+                    speed: parseInt(document.getElementById('statSpeed').value)
+                }
+            };
+
+            wildkinList.push(newWildkin);
+            localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+            
+            filterWildkin();
+            closeModalDirect('addModal');
+        }
+
+        renderGrid(wildkinList);
+        checkAdminAccess();
+    </script>
+</body>
+</html>
