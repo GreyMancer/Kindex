@@ -229,7 +229,7 @@
             background: white;
             padding: 35px;
             border-radius: calc(var(--radius) + 4px);
-            max-width: 480px;
+            max-width: 520px;
             width: 100%;
             text-align: center;
             position: relative;
@@ -265,10 +265,23 @@
             color: var(--text-main);
         }
 
-        /* Stat Bars Styling */
-        .stats-container {
+        /* Stat Bars & Chart Styling */
+        .stats-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
             margin-top: 20px;
             text-align: left;
+        }
+
+        @media(min-width: 480px) {
+            .stats-wrapper {
+                grid-template-columns: 1fr 140px;
+                align-items: center;
+            }
+        }
+
+        .stats-container {
             background: #f8fafc;
             padding: 20px;
             border-radius: 12px;
@@ -307,7 +320,7 @@
         }
 
         .stat-name {
-            width: 85px;
+            width: 90px;
             font-weight: 700;
             color: var(--text-muted);
         }
@@ -331,6 +344,26 @@
             height: 100%;
             background: linear-gradient(90deg, var(--primary), #51cf66);
             border-radius: 6px;
+        }
+
+        .chart-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #edf2f7;
+        }
+
+        .chart-box span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
         }
 
         /* Form styling */
@@ -364,9 +397,6 @@
         }
 
         .stats-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
             background: #f8fafc;
             padding: 15px;
             border-radius: 12px;
@@ -374,8 +404,31 @@
             border: 1px solid #edf2f7;
         }
 
-        .stats-inputs .form-group {
-            margin-bottom: 0;
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        .slider-row label {
+            width: 90px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0 !important;
+        }
+
+        .slider-row input[type="range"] {
+            flex-grow: 1;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .slider-row span {
+            width: 35px;
+            text-align: right;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -428,12 +481,18 @@
             <div id="modalBadges" class="badges" style="margin-bottom: 18px;"></div>
             <p id="modalDescription" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;"></p>
             
-            <div class="stats-container">
-                <div class="stats-header-flex">
-                    <h4>Base Stats</h4>
-                    <span id="modalBst" class="bst-badge">BST: 0</span>
+            <div class="stats-wrapper">
+                <div class="stats-container">
+                    <div class="stats-header-flex">
+                        <h4>Base Stats</h4>
+                        <span id="modalBst" class="bst-badge">BST: 0</span>
+                    </div>
+                    <div id="modalStats"></div>
                 </div>
-                <div id="modalStats"></div>
+                <div class="chart-box">
+                    <svg id="modalPieChart" width="90" height="90" viewBox="0 0 32 32"></svg>
+                    <span>Stat Spread</span>
+                </div>
             </div>
 
             <div id="adminDeleteContainer" style="margin-top: 20px; text-align: right; display: none;">
@@ -504,39 +563,52 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="addImageFile">Upload Image from Device</label>
-                    <input type="file" id="addImageFile" accept="image/*" required>
+                    <label for="addImg">Image Path / URL</label>
+                    <input type="text" id="addImg" required placeholder="images/filename.png">
                 </div>
                 <div class="form-group">
                     <label for="addDesc">Description / Lore</label>
                     <textarea id="addDesc" required placeholder="Write a short description..."></textarea>
                 </div>
 
-                <label style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 5px; text-align: left;">Base Stats</label>
+                <div class="stats-header-flex" style="margin-bottom: 5px;">
+                    <label style="font-weight: 700; font-size: 0.85rem; color: var(--text-main);">Adjust Base Stats</label>
+                    <span id="formBst" class="bst-badge">BST: 300</span>
+                </div>
                 <div class="stats-inputs">
-                    <div class="form-group">
+                    <div class="slider-row">
                         <label for="statHp">HP</label>
-                        <input type="number" id="statHp" value="50" min="1" max="255" required>
+                        <input type="range" id="statHp" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valHp">50</span>
                     </div>
-                    <div class="form-group">
+                    <div class="slider-row">
                         <label for="statAttack">Attack</label>
-                        <input type="number" id="statAttack" value="50" min="1" max="255" required>
+                        <input type="range" id="statAttack" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valAttack">50</span>
                     </div>
-                    <div class="form-group">
+                    <div class="slider-row">
                         <label for="statDefense">Defense</label>
-                        <input type="number" id="statDefense" value="50" min="1" max="255" required>
+                        <input type="range" id="statDefense" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valDefense">50</span>
                     </div>
-                    <div class="form-group">
-                        <label for="statSpatk">Sp. Atk</label>
-                        <input type="number" id="statSpatk" value="50" min="1" max="255" required>
+                    <div class="slider-row">
+                        <label for="statPower">Power</label>
+                        <input type="range" id="statPower" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valPower">50</span>
                     </div>
-                    <div class="form-group">
-                        <label for="statSpdef">Sp. Def</label>
-                        <input type="number" id="statSpdef" value="50" min="1" max="255" required>
+                    <div class="slider-row">
+                        <label for="statResistance">Resistance</label>
+                        <input type="range" id="statResistance" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valResistance">50</span>
                     </div>
-                    <div class="form-group">
+                    <div class="slider-row">
                         <label for="statSpeed">Speed</label>
-                        <input type="number" id="statSpeed" value="50" min="1" max="255" required>
+                        <input type="range" id="statSpeed" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valSpeed">50</span>
+                    </div>
+                    
+                    <div style="margin-top: 15px; text-align: center;">
+                        <svg id="formPieChart" width="80" height="80" viewBox="0 0 32 32"></svg>
                     </div>
                 </div>
 
@@ -554,7 +626,7 @@
                 types: ["Flame"],
                 img: "images/flitlick.png",
                 description: "The fire serpent. It uses the spear-like blade on its tail to channel intense heat, while its armored head plate protects it from backfiring embers.",
-                stats: { hp: 45, attack: 65, defense: 50, spatk: 60, spdef: 45, speed: 85 }
+                stats: { hp: 45, attack: 65, defense: 50, power: 60, resistance: 45, speed: 85 }
             },
             {
                 id: 2,
@@ -563,7 +635,7 @@
                 types: ["Flame", "Iron"],
                 img: "images/slinkmail.png",
                 description: "The evolved form of Flitlick. Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
-                stats: { hp: 65, attack: 85, defense: 75, spatk: 70, spdef: 60, speed: 95 }
+                stats: { hp: 65, attack: 85, defense: 75, power: 70, resistance: 60, speed: 95 }
             },
             {
                 id: 3,
@@ -572,23 +644,19 @@
                 types: ["Flame", "Iron"],
                 img: "images/serphelme.png",
                 description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
-                stats: { hp: 85, attack: 115, defense: 95, spatk: 85, spdef: 80, speed: 105 }
+                stats: { hp: 85, attack: 115, defense: 95, power: 85, resistance: 80, speed: 105 }
             }
         ];
 
         let wildkinList = JSON.parse(localStorage.getItem('kindex_wildkin')) || defaultWildkin;
         let currentSelectedId = null;
-
         const ADMIN_SECRET = "Arsenal"; 
 
         function checkAdminAccess() {
             const urlParams = new URLSearchParams(window.location.search);
-            const adminKey = urlParams.get('admin');
-
-            if (adminKey === ADMIN_SECRET) {
+            if (urlParams.get('admin') === ADMIN_SECRET) {
                 sessionStorage.setItem('kindex_is_admin', 'true');
             }
-
             if (sessionStorage.getItem('kindex_is_admin') === 'true') {
                 document.getElementById('adminControls').style.display = 'flex';
                 document.getElementById('adminDeleteContainer').style.display = 'block';
@@ -636,6 +704,38 @@
             renderGrid(filtered);
         }
 
+        function generatePieChartSvg(statsObj, svgElementId) {
+            const svg = document.getElementById(svgElementId);
+            const values = Object.values(statsObj);
+            const total = values.reduce((sum, val) => sum + val, 0);
+
+            if (total === 0) {
+                svg.innerHTML = '<circle cx="16" cy="16" r="15.9155" fill="#e2e8f0" />';
+                return;
+            }
+
+            const colors = ['#2b8a3e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+            let cumulativePercent = 0;
+            let svgContent = '';
+
+            values.forEach((val, idx) => {
+                const percent = val / total;
+                const dashArray = `${percent * 100} ${100 - (percent * 100)}`;
+                const dashOffset = -cumulativePercent * 100;
+
+                svgContent += `
+                    <circle cx="16" cy="16" r="15.9155" fill="transparent" 
+                        stroke="${colors[idx % colors.length]}" 
+                        stroke-width="7" 
+                        stroke-dasharray="${dashArray}" 
+                        stroke-dashoffset="${dashOffset}" />
+                `;
+                cumulativePercent += percent;
+            });
+
+            svg.innerHTML = svgContent;
+        }
+
         function openModal(mon) {
             currentSelectedId = mon.id;
             document.getElementById('modalImg').src = mon.img;
@@ -647,7 +747,7 @@
             badgesContainer.innerHTML = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
 
             const statsContainer = document.getElementById('modalStats');
-            const statLabels = { hp: 'HP', attack: 'Attack', defense: 'Defense', spatk: 'Sp. Atk', spdef: 'Sp. Def', speed: 'Speed' };
+            const statLabels = { hp: 'HP', attack: 'Attack', defense: 'Defense', power: 'Power', resistance: 'Resistance', speed: 'Speed' };
             
             let totalBst = 0;
             statsContainer.innerHTML = Object.entries(mon.stats).map(([key, val]) => {
@@ -665,7 +765,31 @@
             }).join('');
 
             document.getElementById('modalBst').innerText = `BST: ${totalBst}`;
+            generatePieChartSvg(mon.stats, 'modalPieChart');
             document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function updateFormStats() {
+            const stats = {
+                hp: parseInt(document.getElementById('statHp').value),
+                attack: parseInt(document.getElementById('statAttack').value),
+                defense: parseInt(document.getElementById('statDefense').value),
+                power: parseInt(document.getElementById('statPower').value),
+                resistance: parseInt(document.getElementById('statResistance').value),
+                speed: parseInt(document.getElementById('statSpeed').value)
+            };
+
+            document.getElementById('valHp').innerText = stats.hp;
+            document.getElementById('valAttack').innerText = stats.attack;
+            document.getElementById('valDefense').innerText = stats.defense;
+            document.getElementById('valPower').innerText = stats.power;
+            document.getElementById('valResistance').innerText = stats.resistance;
+            document.getElementById('valSpeed').innerText = stats.speed;
+
+            const bst = Object.values(stats).reduce((a, b) => a + b, 0);
+            document.getElementById('formBst').innerText = `BST: ${bst}`;
+
+            generatePieChartSvg(stats, 'formPieChart');
         }
 
         function deleteCurrentWildkin() {
@@ -689,6 +813,13 @@
 
         function openAddModal() {
             document.getElementById('addWildkinForm').reset();
+            document.getElementById('statHp').value = 50;
+            document.getElementById('statAttack').value = 50;
+            document.getElementById('statDefense').value = 50;
+            document.getElementById('statPower').value = 50;
+            document.getElementById('statResistance').value = 50;
+            document.getElementById('statSpeed').value = 50;
+            updateFormStats();
             document.getElementById('addModal').style.display = 'flex';
         }
 
@@ -705,19 +836,6 @@
         function handleFormSubmit(e) {
             e.preventDefault();
 
-            const fileInput = document.getElementById('addImageFile');
-            const file = fileInput.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(uploadEvent) {
-                    saveNewWildkinRecord(uploadEvent.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function saveNewWildkinRecord(imageSrc) {
             const type1 = document.getElementById('addType1').value;
             const type2 = document.getElementById('addType2').value;
             let types = [type1];
@@ -730,14 +848,14 @@
                 number: document.getElementById('addNumber').value,
                 name: document.getElementById('addName').value,
                 types: types,
-                img: imageSrc,
+                img: document.getElementById('addImg').value,
                 description: document.getElementById('addDesc').value,
                 stats: {
                     hp: parseInt(document.getElementById('statHp').value),
                     attack: parseInt(document.getElementById('statAttack').value),
                     defense: parseInt(document.getElementById('statDefense').value),
-                    spatk: parseInt(document.getElementById('statSpatk').value),
-                    spdef: parseInt(document.getElementById('statSpdef').value),
+                    power: parseInt(document.getElementById('statPower').value),
+                    resistance: parseInt(document.getElementById('statResistance').value),
                     speed: parseInt(document.getElementById('statSpeed').value)
                 }
             };
