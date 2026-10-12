@@ -108,10 +108,53 @@
 
         header p {
             color: var(--text-muted);
-            margin: 0 0 25px 0;
+            margin: 0 0 15px 0;
             font-size: 1.1rem;
             font-style: italic;
             letter-spacing: 0.5px;
+        }
+
+        /* Map Button & Image Section Styling */
+        .header-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn-map {
+            display: inline-block;
+            padding: 10px 22px;
+            background-color: var(--halloween-orange);
+            color: #fff;
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 117, 24, 0.3);
+        }
+
+        .btn-map:hover {
+            background-color: #e06210;
+            transform: translateY(-1px);
+        }
+
+        .image-placeholder-container {
+            max-width: 320px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .image-placeholder-container img {
+            width: 100%;
+            height: auto;
+            border: 2px dashed var(--border-iron);
+            border-radius: var(--radius);
+            background-color: var(--bg-panel);
+            object-fit: contain;
+            display: block;
         }
 
         /* Horizontal Navigation Tabs */
@@ -429,11 +472,11 @@
         .type-bloom { background-color: #27ae60; color: #fff; }
         .type-spark { background-color: #f1c40f; color: #111412; }
         .type-frost { background-color: #7fb3d5; color: #111412; }
-        .type-gale { background-color: #3498db; color: #fff; } /* Sky Blue */
-        .type-stone { background-color: #8c6239; color: #fff; } /* Brown */
+        .type-gale { background-color: #3498db; color: #fff; }
+        .type-stone { background-color: #8c6239; color: #fff; }
         .type-iron { background-color: #bdc3c7; color: #111412; }
         .type-venom { background-color: #8e44ad; color: #fff; }
-        .type-swarm { background-color: #2ecc71; color: #111412; } /* Light Green */
+        .type-swarm { background-color: #2ecc71; color: #111412; }
         .type-might { background-color: #c0392b; color: #fff; }
         .type-psyche { background-color: #e84393; color: #fff; }
         .type-shade { background-color: #2c3e50; color: #fff; }
@@ -646,47 +689,6 @@
             dominant-baseline: central;
         }
 
-        /* Evolution Chain styling */
-        .evolution-box {
-            background: var(--bg-panel);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border-iron);
-            text-align: left;
-            margin-top: 15px;
-        }
-
-        .evolution-box h4 {
-            margin: 0 0 10px 0;
-            font-size: 0.8rem;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .evo-flex {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .evo-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border-iron);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .evo-item:hover {
-            border-color: var(--halloween-orange);
-            color: var(--halloween-orange);
-        }
-
         /* Form styling */
         .form-group {
             margin-bottom: 15px;
@@ -762,8 +764,17 @@
 
     <header>
         <h1>Kindex</h1>
-        <p>A Compendium of Mythic Wildkin and Folklore</p>
+        <p>Wildkin Catalog</p>
         
+        <!-- Action Button and Image Placeholder Container -->
+        <div class="header-actions">
+            <a href="map.html" class="btn-map">View Map</a>
+            <div class="image-placeholder-container">
+                <!-- Replace 'your-image.jpg' with your actual image file path or URL -->
+                <img src="your-image.jpg" alt="Wildkin Catalog Featured Image">
+            </div>
+        </div>
+
         <!-- Horizontal Navigation Tabs -->
         <nav class="nav-tabs">
             <button class="nav-tab-btn active" onclick="switchTab('wildkin', this)">Wildkin</button>
@@ -911,12 +922,6 @@
                             <svg id="modalRadarChart" class="radar-svg" width="180" height="180" viewBox="0 0 200 200"></svg>
                         </div>
                     </div>
-
-                    <!-- Evolution Chain Box -->
-                    <div class="evolution-box" id="modalEvoContainer" style="display:none;">
-                        <h4>Evolution Lineage</h4>
-                        <div class="evo-flex" id="modalEvoList"></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -935,10 +940,6 @@
                 <div class="form-group">
                     <label for="addName">Name</label>
                     <input type="text" id="addName" required placeholder="Wildkin Name">
-                </div>
-                <div class="form-group">
-                    <label for="addEvolutionLine">Evolution Line Group (e.g. Flitlick Family)</label>
-                    <input type="text" id="addEvolutionLine" placeholder="Leave blank or name family group">
                 </div>
                 <div class="form-group">
                     <label for="addType1">Primary Type</label>
@@ -1109,7 +1110,6 @@
                 number: "#001",
                 name: "Flitlick",
                 types: ["Flame"],
-                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
                 description: "The fire serpent. It uses the spear-like blade on its tail to channel intense heat, while its armored head plate protects it from backfiring embers.",
                 stats: { hp: 45, attack: 65, defense: 50, power: 60, resistance: 45, speed: 85 }
@@ -1119,9 +1119,8 @@
                 number: "#002",
                 name: "Slinkmail",
                 types: ["Flame", "Iron"],
-                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png",
-                description: "The evolved form of Flitlick. Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
+                description: "Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
                 stats: { hp: 65, attack: 85, defense: 75, power: 70, resistance: 60, speed: 95 }
             },
             {
@@ -1129,9 +1128,8 @@
                 number: "#003",
                 name: "Serphelme",
                 types: ["Flame", "Iron"],
-                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
-                description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
+                description: "It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
                 stats: { hp: 85, attack: 115, defense: 95, power: 85, resistance: 80, speed: 105 }
             }
         ];
@@ -1365,29 +1363,7 @@
             document.getElementById('modalBst').innerText = `BST: ${totalBst}`;
             renderRadarChart(mon.stats, 'modalRadarChart');
 
-            // Render Evolution Lineage if available
-            const evoContainer = document.getElementById('modalEvoContainer');
-            const evoList = document.getElementById('modalEvoList');
-            if (mon.evolutionLine) {
-                const family = wildkinList.filter(m => m.evolutionLine === mon.evolutionLine);
-                if (family.length > 1) {
-                    evoContainer.style.display = 'block';
-                    evoList.innerHTML = family.map(famMon => `
-                        <div class="evo-item" onclick="openModalById(${famMon.id})">${famMon.number} ${famMon.name}</div>
-                    `).join('');
-                } else {
-                    evoContainer.style.display = 'none';
-                }
-            } else {
-                evoContainer.style.display = 'none';
-            }
-
             document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        function openModalById(id) {
-            const mon = wildkinList.find(m => m.id === id);
-            if (mon) openModal(mon);
         }
 
         function updateFormStats() {
@@ -1552,7 +1528,6 @@
                 number: document.getElementById('addNumber').value,
                 name: document.getElementById('addName').value,
                 types: types,
-                evolutionLine: document.getElementById('addEvolutionLine').value.trim(),
                 img: imageSrc,
                 description: document.getElementById('addDesc').value,
                 stats: {
