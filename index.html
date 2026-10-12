@@ -3,87 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kindex - Official Wildkin Catalog</title>
+    <title>Kindex - Germanic Folklore Bestiary</title>
     <style>
         :root {
-            --bg-color: #f4f6f8;
-            --card-bg: #ffffff;
-            --text-main: #1a202c;
-            --text-muted: #718096;
-            --primary: #2b8a3e;
-            --primary-hover: #236c31;
-            --danger: #dc3545;
-            --danger-hover: #bd2130;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            --radius: 16px;
+            --bg-deep: #111412;
+            --bg-panel: #1b221d;
+            --bg-card: #232d26;
+            --text-main: #e2e8df;
+            --text-muted: #9aa89e;
+            --primary: #c59b27; /* Aged Rune Gold */
+            --primary-hover: #dfb236;
+            --accent-green: #3b5e43; /* Deep Pine */
+            --danger: #a93226;
+            --danger-hover: #c0392b;
+            --border-iron: #344239;
+            --shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            --radius: 12px;
         }
 
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-deep);
             color: var(--text-main);
             margin: 0;
-            padding: 30px 20px;
+            padding: 40px 20px;
+            background-image: radial-gradient(circle at 50% 0%, #1a251e 0%, var(--bg-deep) 70%);
+            min-height: 100vh;
         }
 
         header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         header h1 {
             margin: 0 0 8px 0;
             color: var(--primary);
-            font-size: 3rem;
-            letter-spacing: -0.5px;
+            font-size: 3.2rem;
+            letter-spacing: 1.5px;
             font-weight: 800;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(197, 155, 39, 0.3);
         }
 
         header p {
             color: var(--text-muted);
-            margin: 0 0 15px 0;
+            margin: 0 0 25px 0;
             font-size: 1.1rem;
+            font-style: italic;
+            letter-spacing: 0.5px;
         }
 
         /* Horizontal Navigation Tabs */
         .nav-tabs {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 35px;
             flex-wrap: wrap;
         }
 
         .nav-tab-btn {
-            background-color: white;
+            background-color: var(--bg-panel);
             color: var(--text-muted);
-            border: 2px solid #e2e8f0;
-            padding: 10px 22px;
+            border: 1px solid var(--border-iron);
+            padding: 10px 24px;
             font-size: 0.95rem;
             font-weight: 700;
             border-radius: 30px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
         }
 
         .nav-tab-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
+            background-color: var(--bg-card);
         }
 
         .nav-tab-btn.active {
             background-color: var(--primary);
-            color: white;
+            color: #111412;
             border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(43, 138, 62, 0.25);
+            box-shadow: 0 4px 15px rgba(197, 155, 39, 0.35);
         }
 
         .admin-controls {
             display: none;
             justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .controls {
@@ -98,41 +108,43 @@
         input[type="text"], select, input[type="number"], input[type="file"] {
             padding: 14px 20px;
             font-size: 1rem;
-            border: 2px solid #e2e8f0;
+            border: 1px solid var(--border-iron);
             border-radius: var(--radius);
             outline: none;
             transition: all 0.2s ease;
             width: 300px;
             max-width: 100%;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            background: var(--bg-panel);
+            color: var(--text-main);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
 
         input[type="file"] {
             padding: 10px;
-            background: #f8fafc;
             cursor: pointer;
         }
 
         input[type="text"]:focus, select:focus, input[type="number"]:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(43, 138, 62, 0.15);
+            box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.2), inset 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .btn {
             background-color: var(--primary);
-            color: white;
+            color: #111412;
             border: none;
-            padding: 12px 20px;
+            padding: 12px 22px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: var(--radius);
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
         }
 
         .btn:hover {
             background-color: var(--primary-hover);
+            transform: translateY(-1px);
         }
 
         .btn:active {
@@ -141,6 +153,7 @@
 
         .btn-danger {
             background-color: var(--danger);
+            color: white;
         }
         .btn-danger:hover {
             background-color: var(--danger-hover);
@@ -149,11 +162,12 @@
         .btn-outline {
             background-color: transparent;
             color: var(--text-muted);
-            border: 2px solid #e2e8f0;
+            border: 1px solid var(--border-iron);
         }
         .btn-outline:hover {
-            background-color: #e2e8f0;
+            background-color: var(--bg-card);
             color: var(--text-main);
+            border-color: var(--text-muted);
         }
 
         /* Tab Content Sections */
@@ -179,7 +193,9 @@
         .tab-header-flex h2 {
             margin: 0;
             font-size: 1.8rem;
-            color: var(--text-main);
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .grid {
@@ -189,7 +205,7 @@
         }
 
         .card {
-            background-color: var(--card-bg);
+            background-color: var(--bg-card);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             padding: 25px 20px;
@@ -197,13 +213,13 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            border: 1px solid rgba(0,0,0,0.04);
+            border: 1px solid var(--border-iron);
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
-            border-color: rgba(43, 138, 62, 0.2);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
+            border-color: var(--primary);
         }
 
         .card img {
@@ -212,23 +228,25 @@
             object-fit: contain;
             margin-bottom: 15px;
             transition: transform 0.3s ease;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.4));
         }
 
         .card:hover img {
-            transform: scale(1.05);
+            transform: scale(1.06);
         }
 
         .card .number {
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--primary);
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .card h3 {
             margin: 6px 0 14px 0;
             font-size: 1.35rem;
             font-weight: 700;
+            color: var(--text-main);
         }
 
         .badges {
@@ -240,22 +258,22 @@
 
         .badge {
             padding: 5px 14px;
-            border-radius: 30px;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 700;
-            color: white;
+            color: #111412;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         /* Generic table layout for Moves, Abilities, Items */
         .compendium-table-wrapper {
-            background: white;
+            background: var(--bg-card);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.04);
+            border: 1px solid var(--border-iron);
         }
 
         .compendium-table {
@@ -266,19 +284,19 @@
         }
 
         .compendium-table th {
-            background-color: #f8fafc;
-            color: var(--text-muted);
+            background-color: var(--bg-panel);
+            color: var(--primary);
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.75rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             padding: 16px 20px;
-            border-bottom: 2px solid #edf2f7;
+            border-bottom: 2px solid var(--border-iron);
         }
 
         .compendium-table td {
             padding: 16px 20px;
-            border-bottom: 1px solid #edf2f7;
+            border-bottom: 1px solid var(--border-iron);
             color: var(--text-main);
         }
 
@@ -287,7 +305,7 @@
         }
 
         .compendium-table tr:hover {
-            background-color: #f8fafc;
+            background-color: rgba(255, 255, 255, 0.02);
         }
 
         .admin-action-cell {
@@ -296,56 +314,58 @@
         }
 
         /* Type Colors */
-        .type-flame { background-color: #F08030; }
-        .type-tide { background-color: #6890F0; }
-        .type-bloom { background-color: #78C850; }
-        .type-spark { background-color: #F8D030; color: #1a202c; }
-        .type-frost { background-color: #98D8D8; color: #1a202c; }
-        .type-gale { background-color: #A890F0; }
-        .type-stone { background-color: #B8A038; }
-        .type-iron { background-color: #B8B8D0; color: #1a202c; }
-        .type-venom { background-color: #A040A0; }
-        .type-swarm { background-color: #A8B820; }
-        .type-might { background-color: #C03028; }
-        .type-psyche { background-color: #F85888; }
-        .type-shade { background-color: #705848; }
-        .type-ghoul { background-color: #705898; }
-        .type-fae { background-color: #EE99AC; color: #1a202c; }
-        .type-neutral { background-color: #A8A878; }
-        .type-wyrm { background-color: #7038F8; }
-        .type-cosmic { background-color: #6b46c1; }
+        .type-flame { background-color: #d35400; color: #fff; }
+        .type-tide { background-color: #2980b9; color: #fff; }
+        .type-bloom { background-color: #27ae60; color: #fff; }
+        .type-spark { background-color: #f1c40f; color: #111412; }
+        .type-frost { background-color: #7fb3d5; color: #111412; }
+        .type-gale { background-color: #8e44ad; color: #fff; }
+        .type-stone { background-color: #95a5a6; color: #111412; }
+        .type-iron { background-color: #bdc3c7; color: #111412; }
+        .type-venom { background-color: #8e44ad; color: #fff; }
+        .type-swarm { background-color: #d4ac0d; color: #111412; }
+        .type-might { background-color: #c0392b; color: #fff; }
+        .type-psyche { background-color: #e84393; color: #fff; }
+        .type-shade { background-color: #2c3e50; color: #fff; }
+        .type-ghoul { background-color: #512e5f; color: #fff; }
+        .type-fae { background-color: #ff9ff3; color: #111412; }
+        .type-neutral { background-color: #7f8c8d; color: #fff; }
+        .type-wyrm { background-color: #6c5ce7; color: #fff; }
+        .type-cosmic { background-color: #341f97; color: #fff; }
 
         /* Modal styling */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(26, 32, 44, 0.6);
+            background: rgba(11, 15, 12, 0.8);
             justify-content: center;
             align-items: center;
             padding: 20px;
             overflow-y: auto;
             z-index: 1000;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(6px);
         }
 
         .modal-content {
-            background: white;
+            background: var(--bg-card);
+            border: 1px solid var(--border-iron);
             padding: 35px;
             border-radius: calc(var(--radius) + 4px);
             max-width: 850px;
             width: 100%;
             position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
             max-height: 90vh;
             overflow-y: auto;
+            color: var(--text-main);
         }
 
         .close-btn {
             position: absolute;
             top: 20px; right: 20px;
-            background: #f1f5f9;
-            border: none;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-iron);
             width: 36px; height: 36px;
             border-radius: 50%;
             font-size: 1.2rem;
@@ -358,8 +378,9 @@
             z-index: 10;
         }
         .close-btn:hover {
-            background: #e2e8f0;
-            color: var(--text-main);
+            background: var(--bg-card);
+            color: var(--primary);
+            border-color: var(--primary);
         }
 
         /* Two-Column Detail Modal Layout */
@@ -381,10 +402,10 @@
             flex-direction: column;
             align-items: flex-start;
             text-align: left;
-            background: #f8fafc;
+            background: var(--bg-panel);
             padding: 20px;
             border-radius: 12px;
-            border: 1px solid #edf2f7;
+            border: 1px solid var(--border-iron);
         }
 
         .modal-left-pane img {
@@ -392,6 +413,7 @@
             height: 160px;
             object-fit: contain;
             margin: 0 auto 15px auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
         }
 
         .modal-right-pane {
@@ -401,17 +423,17 @@
         }
 
         .lore-box {
-            background: #f8fafc;
+            background: var(--bg-panel);
             padding: 20px;
             border-radius: 12px;
-            border: 1px solid #edf2f7;
+            border: 1px solid var(--border-iron);
             text-align: left;
         }
 
         .lore-box h4 {
             margin: 0 0 8px 0;
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -431,10 +453,10 @@
         }
 
         .stats-container {
-            background: #f8fafc;
+            background: var(--bg-panel);
             padding: 20px;
             border-radius: 12px;
-            border: 1px solid #edf2f7;
+            border: 1px solid var(--border-iron);
         }
 
         .stats-header-flex {
@@ -447,18 +469,19 @@
         .stats-container h4 {
             margin: 0;
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .bst-badge {
-            background: #e6f4ea;
-            color: #137333;
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--primary);
             font-weight: 700;
             font-size: 0.75rem;
             padding: 3px 8px;
             border-radius: 20px;
+            border: 1px solid rgba(197, 155, 39, 0.3);
         }
 
         .stat-row {
@@ -482,7 +505,7 @@
 
         .stat-bar-bg {
             flex-grow: 1;
-            background-color: #e2e8f0;
+            background-color: var(--border-iron);
             border-radius: 6px;
             height: 8px;
             margin-left: 12px;
@@ -491,7 +514,7 @@
 
         .stat-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), #51cf66);
+            background: linear-gradient(90deg, #947119, var(--primary));
             border-radius: 6px;
         }
 
@@ -499,16 +522,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: #f8fafc;
+            background: var(--bg-panel);
             padding: 15px;
             border-radius: 12px;
-            border: 1px solid #edf2f7;
+            border: 1px solid var(--border-iron);
         }
 
         .radar-svg text {
             font-size: 8px;
             font-weight: bold;
-            fill: #4a5568;
+            fill: var(--text-muted);
             text-anchor: middle;
             dominant-baseline: central;
         }
@@ -534,21 +557,22 @@
 
         .form-group textarea {
             padding: 12px;
-            border: 2px solid #e2e8f0;
+            border: 1px solid var(--border-iron);
             border-radius: var(--radius);
             font-family: inherit;
             resize: vertical;
             height: 80px;
             outline: none;
-            background: white;
+            background: var(--bg-panel);
+            color: var(--text-main);
         }
 
         .stats-inputs {
-            background: #f8fafc;
+            background: var(--bg-panel);
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 15px;
-            border: 1px solid #edf2f7;
+            border: 1px solid var(--border-iron);
         }
 
         .slider-row {
@@ -583,7 +607,7 @@
 
     <header>
         <h1>Kindex</h1>
-        <p>Explore and search the official Wildkin catalog</p>
+        <p>A Compendium of Mythic Wildkin and Folklore</p>
         
         <!-- Horizontal Navigation Tabs -->
         <nav class="nav-tabs">
@@ -702,7 +726,7 @@
                 <div class="modal-left-pane">
                     <img id="modalImg" src="" alt="" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
                     <p id="modalNumber" class="number" style="margin: 0 0 4px 0;"></p>
-                    <h2 id="modalName" style="margin: 0 0 12px 0; font-size: 1.8rem;"></h2>
+                    <h2 id="modalName" style="margin: 0 0 12px 0; font-size: 1.8rem; color: var(--text-main);"></h2>
                     <div id="modalBadges" class="badges" style="justify-content: flex-start; margin-bottom: 20px;"></div>
                     
                     <div id="adminDeleteContainer" style="width: 100%; display: none; margin-top: auto;">
@@ -737,7 +761,7 @@
     <div class="modal" id="addModal" onclick="closeModal(event, 'addModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModalDirect('addModal')">&times;</button>
-            <h2 style="margin-top: 0;">Add New Wildkin</h2>
+            <h2 style="margin-top: 0; color: var(--primary);">Add New Wildkin</h2>
             <form id="addWildkinForm" onsubmit="handleFormSubmit(event)">
                 <div class="form-group">
                     <label for="addNumber">Dex Number (e.g. #004)</label>
@@ -853,7 +877,7 @@
     <div class="modal" id="genericAddModal" onclick="closeModal(event, 'genericAddModal')">
         <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px;">
             <button class="close-btn" onclick="closeModalDirect('genericAddModal')">&times;</button>
-            <h2 id="genericModalTitle" style="margin-top: 0;">Add New Entry</h2>
+            <h2 id="genericModalTitle" style="margin-top: 0; color: var(--primary);">Add New Entry</h2>
             <form id="genericAddForm" onsubmit="handleGenericFormSubmit(event)">
                 <div class="form-group">
                     <label for="genName">Name</label>
@@ -971,7 +995,6 @@
                 sessionStorage.setItem('kindex_is_admin', 'true');
             }
             if (sessionStorage.getItem('kindex_is_admin') === 'true') {
-                // Only show admin controls for Wildkin initially since Wildkin tab is default active
                 document.getElementById('adminControls').style.display = 'flex';
                 document.getElementById('adminDeleteContainer').style.display = 'block';
                 document.querySelectorAll('.admin-only-btn').forEach(b => b.style.display = 'inline-block');
@@ -986,7 +1009,6 @@
             document.getElementById('tab-' + tabName).classList.add('active');
             btnElement.classList.add('active');
 
-            // Toggle header Wildkin admin controls based on active tab
             const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
             if (isAdmin) {
                 const adminControls = document.getElementById('adminControls');
@@ -1104,14 +1126,14 @@
                     const y = cy + r * Math.sin(angle);
                     points += `${x},${y} `;
                 }
-                svgContent += `<polygon points="${points}" fill="none" stroke="#e2e8f0" stroke-width="1" />`;
+                svgContent += `<polygon points="${points}" fill="none" stroke="#344239" stroke-width="1" />`;
             }
 
             for (let i = 0; i < 6; i++) {
                 const angle = (Math.PI / 3) * i - Math.PI / 2;
                 const x2 = cx + radius * Math.cos(angle);
                 const y2 = cy + radius * Math.sin(angle);
-                svgContent += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#cbd5e1" stroke-width="1" />`;
+                svgContent += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#344239" stroke-width="1" />`;
 
                 const labelRadius = radius + 18;
                 const lx = cx + labelRadius * Math.cos(angle);
@@ -1129,10 +1151,10 @@
                 const y = cy + r * Math.sin(angle);
                 statPoints += `${x},${y} `;
 
-                svgContent += `<circle cx="${x}" cy="${y}" r="3" fill="#2b8a3e" />`;
+                svgContent += `<circle cx="${x}" cy="${y}" r="3.5" fill="#c59b27" />`;
             });
 
-            svgContent += `<polygon points="${statPoints}" fill="rgba(43, 138, 62, 0.3)" stroke="#2b8a3e" stroke-width="2" />`;
+            svgContent += `<polygon points="${statPoints}" fill="rgba(197, 155, 39, 0.25)" stroke="#c59b27" stroke-width="2" />`;
             svg.innerHTML = svgContent;
         }
 
