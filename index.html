@@ -6,19 +6,20 @@
     <title>Kindex - Germanic Folklore Bestiary</title>
     <style>
         :root {
-            --bg-deep: #111412;
-            --bg-panel: #1b221d;
-            --bg-card: #232d26;
+            --bg-deep: #0b0f0d;
+            --bg-panel: #151c17;
+            --bg-card: #1c2620;
             --text-main: #e2e8df;
             --text-muted: #9aa89e;
             --primary: #c59b27; /* Aged Rune Gold */
             --primary-hover: #dfb236;
-            --accent-green: #3b5e43;
             --danger: #a93226;
             --danger-hover: #c0392b;
-            --border-iron: #344239;
-            --shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            --border-iron: #2b3830;
+            --shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             --radius: 12px;
+            --halloween-orange: #ff7518;
+            --halloween-purple: #6a0dad;
         }
 
         body {
@@ -27,13 +28,72 @@
             color: var(--text-main);
             margin: 0;
             padding: 40px 20px;
-            background-image: radial-gradient(circle at 50% 0%, #1a251e 0%, var(--bg-deep) 70%);
+            background-image: radial-gradient(circle at 50% 0%, #17221b 0%, var(--bg-deep) 70%);
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Halloween Corner Cobwebs & Spooky Accents */
+        body::before {
+            content: "🕸️";
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 3rem;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 999;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+        }
+
+        body::after {
+            content: "🕸️";
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 3rem;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 999;
+            transform: scaleX(-1);
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+        }
+
+        /* Floating Jack-o'-Lantern Badges in Bottom Corners */
+        .halloween-corner-bl {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            font-size: 2.2rem;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 999;
+            animation: floatPumpkin 3s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 8px var(--halloween-orange));
+        }
+
+        .halloween-corner-br {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            font-size: 2.2rem;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 999;
+            animation: floatPumpkin 3s ease-in-out infinite alternate-reverse;
+            filter: drop-shadow(0 0 8px var(--halloween-orange));
+        }
+
+        @keyframes floatPumpkin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
         }
 
         header {
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
         }
 
         header h1 {
@@ -43,7 +103,7 @@
             letter-spacing: 1.5px;
             font-weight: 800;
             text-transform: uppercase;
-            text-shadow: 0 2px 10px rgba(197, 155, 39, 0.3);
+            text-shadow: 0 2px 15px rgba(255, 117, 24, 0.25);
         }
 
         header p {
@@ -77,16 +137,16 @@
         }
 
         .nav-tab-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
+            border-color: var(--halloween-orange);
+            color: var(--halloween-orange);
             background-color: var(--bg-card);
         }
 
         .nav-tab-btn.active {
-            background-color: var(--primary);
-            color: #111412;
-            border-color: var(--primary);
-            box-shadow: 0 4px 15px rgba(197, 155, 39, 0.35);
+            background: linear-gradient(135deg, var(--halloween-orange), #d35400);
+            color: #fff;
+            border-color: var(--halloween-orange);
+            box-shadow: 0 4px 15px rgba(255, 117, 24, 0.4);
         }
 
         .admin-controls {
@@ -135,8 +195,8 @@
         }
 
         input[type="text"]:focus, select:focus, input[type="number"]:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.2), inset 0 2px 4px rgba(0,0,0,0.2);
+            border-color: var(--halloween-orange);
+            box-shadow: 0 0 0 3px rgba(255, 117, 24, 0.25), inset 0 2px 4px rgba(0,0,0,0.2);
         }
 
         /* Custom Visual Type Filter Bar */
@@ -168,15 +228,15 @@
         }
 
         .type-filter-pill:hover {
-            border-color: var(--primary);
+            border-color: var(--halloween-orange);
             color: var(--text-main);
         }
 
         .type-filter-pill.active {
-            background-color: var(--primary);
-            color: #111412;
-            border-color: var(--primary);
-            box-shadow: 0 2px 8px rgba(197, 155, 39, 0.3);
+            background-color: var(--halloween-orange);
+            color: #fff;
+            border-color: var(--halloween-orange);
+            box-shadow: 0 2px 8px rgba(255, 117, 24, 0.4);
         }
 
         .btn {
@@ -268,8 +328,8 @@
 
         .card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
-            border-color: var(--primary);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 117, 24, 0.15);
+            border-color: var(--halloween-orange);
         }
 
         .card img {
@@ -304,7 +364,7 @@
             justify-content: center;
             gap: 6px;
             flex-wrap: wrap;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .badge {
@@ -316,12 +376,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .card-habitat {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-style: italic;
         }
 
         /* Generic table layout for Moves, Abilities, Items */
@@ -395,7 +449,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 15, 12, 0.8);
+            background: rgba(11, 15, 12, 0.85);
             justify-content: center;
             align-items: center;
             padding: 20px;
@@ -412,7 +466,7 @@
             max-width: 850px;
             width: 100%;
             position: relative;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 117, 24, 0.1);
             max-height: 90vh;
             overflow-y: auto;
             color: var(--text-main);
@@ -436,8 +490,8 @@
         }
         .close-btn:hover {
             background: var(--bg-card);
-            color: var(--primary);
-            border-color: var(--primary);
+            color: var(--halloween-orange);
+            border-color: var(--halloween-orange);
         }
 
         /* Two-Column Detail Modal Layout */
@@ -630,8 +684,8 @@
         }
 
         .evo-item:hover {
-            border-color: var(--primary);
-            color: var(--primary);
+            border-color: var(--halloween-orange);
+            color: var(--halloween-orange);
         }
 
         /* Form styling */
@@ -691,7 +745,7 @@
         .slider-row input[type="range"] {
             flex-grow: 1;
             cursor: pointer;
-            accent-color: var(--primary);
+            accent-color: var(--halloween-orange);
         }
 
         .slider-row span {
@@ -703,6 +757,10 @@
 </head>
 <body>
 
+    <!-- Halloween Floating Corner Decorations -->
+    <div class="halloween-corner-bl">🎃</div>
+    <div class="halloween-corner-br">🦇</div>
+
     <header>
         <h1>Kindex</h1>
         <p>A Compendium of Mythic Wildkin and Folklore</p>
@@ -710,7 +768,6 @@
         <!-- Horizontal Navigation Tabs -->
         <nav class="nav-tabs">
             <button class="nav-tab-btn active" onclick="switchTab('wildkin', this)">Wildkin</button>
-            <button class="nav-tab-btn" onclick="switchTab('party', this)">War Band (Party)</button>
             <button class="nav-tab-btn" onclick="switchTab('moves', this)">Moves</button>
             <button class="nav-tab-btn" onclick="switchTab('abilities', this)">Abilities</button>
             <button class="nav-tab-btn" onclick="switchTab('items', this)">Items</button>
@@ -727,14 +784,6 @@
         <div class="controls">
             <div class="search-filter-row">
                 <input type="text" id="searchInput" placeholder="Search by name or number (#001)..." oninput="filterWildkin()">
-                <select id="habitatFilter" onchange="filterWildkin()">
-                    <option value="">All Habitats</option>
-                    <option value="Pine Woods">Pine Woods</option>
-                    <option value="Alpine Peaks">Alpine Peaks</option>
-                    <option value="Deep Mire">Deep Mire</option>
-                    <option value="Riverlands">Riverlands</option>
-                    <option value="Ancient Ruins">Ancient Ruins</option>
-                </select>
             </div>
             
             <!-- Custom Rune Type Filter Bar -->
@@ -763,17 +812,7 @@
         <div class="grid" id="wildkinGrid"></div>
     </div>
 
-    <!-- Tab 2: War Band / Party Planner -->
-    <div id="tab-party" class="tab-section">
-        <div class="tab-header-flex">
-            <h2>War Band Party Planner (Max 6)</h2>
-            <span id="partyBstTotal" class="bst-badge" style="font-size: 0.9rem; padding: 6px 14px;">Combined BST: 0</span>
-        </div>
-        <p style="color: var(--text-muted); margin-bottom: 20px; font-style: italic;">Curate your party of up to 6 Wildkin for your Germanic journey. Click "Add to War Band" from any Wildkin's detail page.</p>
-        <div class="grid" id="partyGrid"></div>
-    </div>
-
-    <!-- Tab 3: Moves Compendium -->
+    <!-- Tab 2: Moves Compendium -->
     <div id="tab-moves" class="tab-section">
         <div class="tab-header-flex">
             <h2>Moves Compendium</h2>
@@ -797,7 +836,7 @@
         </div>
     </div>
 
-    <!-- Tab 4: Abilities Compendium -->
+    <!-- Tab 3: Abilities Compendium -->
     <div id="tab-abilities" class="tab-section">
         <div class="tab-header-flex">
             <h2>Abilities Compendium</h2>
@@ -817,7 +856,7 @@
         </div>
     </div>
 
-    <!-- Tab 5: Items Compendium -->
+    <!-- Tab 4: Items Compendium -->
     <div id="tab-items" class="tab-section">
         <div class="tab-header-flex">
             <h2>Items Compendium</h2>
@@ -848,10 +887,7 @@
                     <img id="modalImg" src="" alt="" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
                     <p id="modalNumber" class="number" style="margin: 0 0 4px 0;"></p>
                     <h2 id="modalName" style="margin: 0 0 12px 0; font-size: 1.8rem; color: var(--text-main);"></h2>
-                    <div id="modalBadges" class="badges" style="justify-content: flex-start;"></div>
-                    <p id="modalHabitat" class="card-habitat" style="margin: 8px 0 15px 0;"></p>
-                    
-                    <button class="btn" style="width: 100%; margin-bottom: 10px; font-size: 0.9rem;" onclick="togglePartyMember()">⚔️ Toggle War Band</button>
+                    <div id="modalBadges" class="badges" style="justify-content: flex-start; margin-bottom: 15px;"></div>
 
                     <div id="adminDeleteContainer" style="width: 100%; display: none; margin-top: auto;">
                         <button class="btn btn-danger" style="width: 100%;" onclick="deleteCurrentWildkin()">Delete Wildkin</button>
@@ -900,16 +936,6 @@
                 <div class="form-group">
                     <label for="addName">Name</label>
                     <input type="text" id="addName" required placeholder="Wildkin Name">
-                </div>
-                <div class="form-group">
-                    <label for="addHabitat">Habitat / Region</label>
-                    <select id="addHabitat" required>
-                        <option value="Pine Woods">Pine Woods</option>
-                        <option value="Alpine Peaks">Alpine Peaks</option>
-                        <option value="Deep Mire">Deep Mire</option>
-                        <option value="Riverlands">Riverlands</option>
-                        <option value="Ancient Ruins">Ancient Ruins</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label for="addEvolutionLine">Evolution Line Group (e.g. Flitlick Family)</label>
@@ -1084,7 +1110,6 @@
                 number: "#001",
                 name: "Flitlick",
                 types: ["Flame"],
-                habitat: "Pine Woods",
                 evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
                 description: "The fire serpent. It uses the spear-like blade on its tail to channel intense heat, while its armored head plate protects it from backfiring embers.",
@@ -1095,7 +1120,6 @@
                 number: "#002",
                 name: "Slinkmail",
                 types: ["Flame", "Iron"],
-                habitat: "Pine Woods",
                 evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png",
                 description: "The evolved form of Flitlick. Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
@@ -1106,7 +1130,6 @@
                 number: "#003",
                 name: "Serphelme",
                 types: ["Flame", "Iron"],
-                habitat: "Alpine Peaks",
                 evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
                 description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
@@ -1133,7 +1156,6 @@
         let movesList = JSON.parse(localStorage.getItem('kindex_moves')) || defaultMoves;
         let abilitiesList = JSON.parse(localStorage.getItem('kindex_abilities')) || defaultAbilities;
         let itemsList = JSON.parse(localStorage.getItem('kindex_items')) || defaultItems;
-        let partyList = JSON.parse(localStorage.getItem('kindex_party')) || [];
 
         let currentSelectedId = null;
         let activeGenericType = null;
@@ -1161,10 +1183,6 @@
             document.getElementById('tab-' + tabName).classList.add('active');
             btnElement.classList.add('active');
 
-            if (tabName === 'party') {
-                renderPartyGrid();
-            }
-
             const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
             if (isAdmin) {
                 const adminControls = document.getElementById('adminControls');
@@ -1178,7 +1196,6 @@
 
         const grid = document.getElementById('wildkinGrid');
         const searchInput = document.getElementById('searchInput');
-        const habitatFilter = document.getElementById('habitatFilter');
 
         function renderGrid(items) {
             grid.innerHTML = '';
@@ -1199,7 +1216,6 @@
                     <img src="${mon.img}" alt="${mon.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
                     <h3>${mon.name}</h3>
                     <div class="badges">${badgesHtml}</div>
-                    <span class="card-habitat">📍 ${mon.habitat || 'Unknown Habitat'}</span>
                 `;
                 grid.appendChild(card);
             });
@@ -1214,70 +1230,14 @@
 
         function filterWildkin() {
             const query = searchInput.value.toLowerCase();
-            const selectedHabitat = habitatFilter.value;
 
             const filtered = wildkinList.filter(mon => {
                 const matchesSearch = mon.name.toLowerCase().includes(query) || mon.number.toLowerCase().includes(query);
                 const matchesType = selectedTypeFilterValue === "" || mon.types.includes(selectedTypeFilterValue);
-                const matchesHabitat = selectedHabitat === "" || mon.habitat === selectedHabitat;
-                return matchesSearch && matchesType && matchesHabitat;
+                return matchesSearch && matchesType;
             });
 
             renderGrid(filtered);
-        }
-
-        function renderPartyGrid() {
-            const pGrid = document.getElementById('partyGrid');
-            pGrid.innerHTML = '';
-
-            let totalPartyBst = 0;
-
-            if (partyList.length === 0) {
-                pGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px 0; font-size: 1.1rem;">Your War Band is empty. Open any Wildkin and click "Toggle War Band" to add them!</p>';
-                document.getElementById('partyBstTotal').innerText = `Combined BST: 0`;
-                return;
-            }
-
-            partyList.forEach(mon => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => openModal(mon);
-
-                const badgesHtml = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
-                const bst = Object.values(mon.stats).reduce((a, b) => a + b, 0);
-                totalPartyBst += bst;
-
-                card.innerHTML = `
-                    <span class="number">${mon.number}</span>
-                    <img src="${mon.img}" alt="${mon.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
-                    <h3>${mon.name}</h3>
-                    <div class="badges">${badgesHtml}</div>
-                    <span class="bst-badge" style="margin-top: 10px; display:inline-block;">BST: ${bst}</span>
-                `;
-                pGrid.appendChild(card);
-            });
-
-            document.getElementById('partyBstTotal').innerText = `Combined BST: ${totalPartyBst}`;
-        }
-
-        function togglePartyMember() {
-            const mon = wildkinList.find(m => m.id === currentSelectedId);
-            if (!mon) return;
-
-            const index = partyList.findIndex(p => p.id === mon.id);
-            if (index > -1) {
-                partyList.splice(index, 1);
-                alert(`${mon.name} has been removed from your War Band.`);
-            } else {
-                if (partyList.length >= 6) {
-                    alert("Your War Band can hold a maximum of 6 Wildkin!");
-                    return;
-                }
-                partyList.push(mon);
-                alert(`${mon.name} has been added to your War Band!`);
-            }
-            localStorage.setItem('kindex_party', JSON.stringify(partyList));
-            closeModalDirect('detailModal');
         }
 
         function renderMovesTable() {
@@ -1345,14 +1305,14 @@
                     const y = cy + r * Math.sin(angle);
                     points += `${x},${y} `;
                 }
-                svgContent += `<polygon points="${points}" fill="none" stroke="#344239" stroke-width="1" />`;
+                svgContent += `<polygon points="${points}" fill="none" stroke="#2b3830" stroke-width="1" />`;
             }
 
             for (let i = 0; i < 6; i++) {
                 const angle = (Math.PI / 3) * i - Math.PI / 2;
                 const x2 = cx + radius * Math.cos(angle);
                 const y2 = cy + radius * Math.sin(angle);
-                svgContent += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#344239" stroke-width="1" />`;
+                svgContent += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#2b3830" stroke-width="1" />`;
 
                 const labelRadius = radius + 18;
                 const lx = cx + labelRadius * Math.cos(angle);
@@ -1370,10 +1330,10 @@
                 const y = cy + r * Math.sin(angle);
                 statPoints += `${x},${y} `;
 
-                svgContent += `<circle cx="${x}" cy="${y}" r="3.5" fill="#c59b27" />`;
+                svgContent += `<circle cx="${x}" cy="${y}" r="3.5" fill="#ff7518" />`;
             });
 
-            svgContent += `<polygon points="${statPoints}" fill="rgba(197, 155, 39, 0.25)" stroke="#c59b27" stroke-width="2" />`;
+            svgContent += `<polygon points="${statPoints}" fill="rgba(255, 117, 24, 0.2)" stroke="#ff7518" stroke-width="2" />`;
             svg.innerHTML = svgContent;
         }
 
@@ -1383,7 +1343,6 @@
             document.getElementById('modalNumber').innerText = mon.number;
             document.getElementById('modalName').innerText = mon.name;
             document.getElementById('modalDescription').innerText = mon.description;
-            document.getElementById('modalHabitat').innerText = `📍 Habitat: ${mon.habitat || 'Unknown'}`;
             
             const badgesContainer = document.getElementById('modalBadges');
             badgesContainer.innerHTML = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
@@ -1458,9 +1417,7 @@
         function deleteCurrentWildkin() {
             if (confirm("Are you sure you want to delete this Wildkin?")) {
                 wildkinList = wildkinList.filter(mon => mon.id !== currentSelectedId);
-                partyList = partyList.filter(mon => mon.id !== currentSelectedId);
                 localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
-                localStorage.setItem('kindex_party', JSON.stringify(partyList));
                 filterWildkin();
                 closeModalDirect('detailModal');
             }
@@ -1490,16 +1447,13 @@
                 movesList = JSON.parse(JSON.stringify(defaultMoves));
                 abilitiesList = JSON.parse(JSON.stringify(defaultAbilities));
                 itemsList = JSON.parse(JSON.stringify(defaultItems));
-                partyList = [];
 
                 localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
                 localStorage.setItem('kindex_moves', JSON.stringify(movesList));
                 localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
                 localStorage.setItem('kindex_items', JSON.stringify(itemsList));
-                localStorage.setItem('kindex_party', JSON.stringify(partyList));
 
                 searchInput.value = '';
-                habitatFilter.value = '';
                 selectedTypeFilterValue = '';
                 document.querySelectorAll('.type-filter-pill').forEach((p, idx) => {
                     if (idx === 0) p.classList.add('active');
@@ -1599,7 +1553,6 @@
                 number: document.getElementById('addNumber').value,
                 name: document.getElementById('addName').value,
                 types: types,
-                habitat: document.getElementById('addHabitat').value,
                 evolutionLine: document.getElementById('addEvolutionLine').value.trim(),
                 img: imageSrc,
                 description: document.getElementById('addDesc').value,
