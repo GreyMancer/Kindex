@@ -167,6 +167,21 @@
             display: block;
         }
 
+        .tab-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .tab-header-flex h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--text-main);
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -273,6 +288,11 @@
 
         .compendium-table tr:hover {
             background-color: #f8fafc;
+        }
+
+        .admin-action-cell {
+            text-align: right;
+            display: none;
         }
 
         /* Type Colors */
@@ -610,6 +630,10 @@
 
     <!-- Tab 2: Moves Compendium -->
     <div id="tab-moves" class="tab-section">
+        <div class="tab-header-flex">
+            <h2>Moves Compendium</h2>
+            <button class="btn admin-only-btn" style="display:none;" onclick="openAddModalGeneric('move')">+ Add New Move</button>
+        </div>
         <div class="compendium-table-wrapper">
             <table class="compendium-table">
                 <thead>
@@ -620,56 +644,40 @@
                         <th>Power</th>
                         <th>Accuracy</th>
                         <th>Description</th>
+                        <th class="admin-action-cell" style="display:none;">Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Inferno Slash</strong></td>
-                        <td><span class="badge type-flame">Flame</span></td>
-                        <td>Physical</td>
-                        <td>85</td>
-                        <td>100%</td>
-                        <td>Slashes the target with a superheated blade, with a high chance to burn.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Iron Defense</strong></td>
-                        <td><span class="badge type-iron">Iron</span></td>
-                        <td>Status</td>
-                        <td>—</td>
-                        <td>—</td>
-                        <td>Hardens the user's body surface to sharply raise Defense.</td>
-                    </tr>
-                </tbody>
+                <tbody id="movesTableBody"></tbody>
             </table>
         </div>
     </div>
 
     <!-- Tab 3: Abilities Compendium -->
     <div id="tab-abilities" class="tab-section">
+        <div class="tab-header-flex">
+            <h2>Abilities Compendium</h2>
+            <button class="btn admin-only-btn" style="display:none;" onclick="openAddModalGeneric('ability')">+ Add New Ability</button>
+        </div>
         <div class="compendium-table-wrapper">
             <table class="compendium-table">
                 <thead>
                     <tr>
                         <th>Ability Name</th>
                         <th>Effect Description</th>
+                        <th class="admin-action-cell" style="display:none;">Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Blaze Armor</strong></td>
-                        <td>Protects the Wildkin from fire-type moves and boosts Power when hit by flames.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Segmented Shell</strong></td>
-                        <td>Heavy metallic plating reduces incoming physical damage by 15%.</td>
-                    </tr>
-                </tbody>
+                <tbody id="abilitiesTableBody"></tbody>
             </table>
         </div>
     </div>
 
     <!-- Tab 4: Items Compendium -->
     <div id="tab-items" class="tab-section">
+        <div class="tab-header-flex">
+            <h2>Items Compendium</h2>
+            <button class="btn admin-only-btn" style="display:none;" onclick="openAddModalGeneric('item')">+ Add New Item</button>
+        </div>
         <div class="compendium-table-wrapper">
             <table class="compendium-table">
                 <thead>
@@ -677,25 +685,15 @@
                         <th>Item Name</th>
                         <th>Category</th>
                         <th>Effect Description</th>
+                        <th class="admin-action-cell" style="display:none;">Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Magma Stone</strong></td>
-                        <td>Held Item</td>
-                        <td>Boosts the power of Flame-type moves by 20% when held.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Revive Herb</strong></td>
-                        <td>Consumable</td>
-                        <td>Restores a fainted Wildkin to half its maximum HP during exploration.</td>
-                    </tr>
-                </tbody>
+                <tbody id="itemsTableBody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Detail Modal -->
+    <!-- Detail Modal (Wildkin) -->
     <div class="modal" id="detailModal" onclick="closeModal(event, 'detailModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModalDirect('detailModal')">&times;</button>
@@ -851,6 +849,66 @@
         </div>
     </div>
 
+    <!-- Generic Add Modal (Moves, Abilities, Items) -->
+    <div class="modal" id="genericAddModal" onclick="closeModal(event, 'genericAddModal')">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px;">
+            <button class="close-btn" onclick="closeModalDirect('genericAddModal')">&times;</button>
+            <h2 id="genericModalTitle" style="margin-top: 0;">Add New Entry</h2>
+            <form id="genericAddForm" onsubmit="handleGenericFormSubmit(event)">
+                <div class="form-group">
+                    <label for="genName">Name</label>
+                    <input type="text" id="genName" required placeholder="Item/Move/Ability Name">
+                </div>
+                <div class="form-group" id="genGroupType" style="display:none;">
+                    <label for="genType">Type</label>
+                    <select id="genType">
+                        <option value="Flame">Flame</option>
+                        <option value="Tide">Tide</option>
+                        <option value="Bloom">Bloom</option>
+                        <option value="Spark">Spark</option>
+                        <option value="Frost">Frost</option>
+                        <option value="Gale">Gale</option>
+                        <option value="Stone">Stone</option>
+                        <option value="Iron">Iron</option>
+                        <option value="Venom">Venom</option>
+                        <option value="Swarm">Swarm</option>
+                        <option value="Might">Might</option>
+                        <option value="Psyche">Psyche</option>
+                        <option value="Shade">Shade</option>
+                        <option value="Ghoul">Ghoul</option>
+                        <option value="Fae">Fae</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="Wyrm">Wyrm</option>
+                        <option value="Cosmic">Cosmic</option>
+                    </select>
+                </div>
+                <div class="form-group" id="genGroupCategory" style="display:none;">
+                    <label for="genCategory">Category</label>
+                    <select id="genCategory">
+                        <option value="Physical">Physical</option>
+                        <option value="Power">Power</option>
+                        <option value="Status">Status</option>
+                        <option value="Held Item">Held Item</option>
+                        <option value="Consumable">Consumable</option>
+                    </select>
+                </div>
+                <div class="form-group" id="genGroupPower" style="display:none;">
+                    <label for="genPower">Power</label>
+                    <input type="text" id="genPower" placeholder="e.g. 85 or —">
+                </div>
+                <div class="form-group" id="genGroupAccuracy" style="display:none;">
+                    <label for="genAccuracy">Accuracy</label>
+                    <input type="text" id="genAccuracy" placeholder="e.g. 100% or —">
+                </div>
+                <div class="form-group">
+                    <label for="genDesc">Description / Effect</label>
+                    <textarea id="genDesc" required placeholder="Write effect description..."></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Save Entry</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         const defaultWildkin = [
             {
@@ -882,8 +940,28 @@
             }
         ];
 
+        const defaultMoves = [
+            { id: 1, name: "Inferno Slash", type: "Flame", category: "Physical", power: "85", accuracy: "100%", desc: "Slashes the target with a superheated blade, with a high chance to burn." },
+            { id: 2, name: "Iron Defense", type: "Iron", category: "Status", power: "—", accuracy: "—", desc: "Hardens the user's body surface to sharply raise Defense." }
+        ];
+
+        const defaultAbilities = [
+            { id: 1, name: "Blaze Armor", desc: "Protects the Wildkin from fire-type moves and boosts Power when hit by flames." },
+            { id: 2, name: "Segmented Shell", desc: "Heavy metallic plating reduces incoming physical damage by 15%." }
+        ];
+
+        const defaultItems = [
+            { id: 1, name: "Magma Stone", category: "Held Item", desc: "Boosts the power of Flame-type moves by 20% when held." },
+            { id: 2, name: "Revive Herb", category: "Consumable", desc: "Restores a fainted Wildkin to half its maximum HP during exploration." }
+        ];
+
         let wildkinList = JSON.parse(localStorage.getItem('kindex_wildkin')) || defaultWildkin;
+        let movesList = JSON.parse(localStorage.getItem('kindex_moves')) || defaultMoves;
+        let abilitiesList = JSON.parse(localStorage.getItem('kindex_abilities')) || defaultAbilities;
+        let itemsList = JSON.parse(localStorage.getItem('kindex_items')) || defaultItems;
+
         let currentSelectedId = null;
+        let activeGenericType = null;
         const ADMIN_SECRET = "Arsenal"; 
         const statLabelsMap = { hp: 'HP', attack: 'Attack', defense: 'Defense', power: 'Power', resistance: 'Resistance', speed: 'Speed' };
 
@@ -895,10 +973,11 @@
             if (sessionStorage.getItem('kindex_is_admin') === 'true') {
                 document.getElementById('adminControls').style.display = 'flex';
                 document.getElementById('adminDeleteContainer').style.display = 'block';
+                document.querySelectorAll('.admin-only-btn').forEach(b => b.style.display = 'inline-block');
+                document.querySelectorAll('.admin-action-cell').forEach(c => c.style.display = 'table-cell');
             }
         }
 
-        // Tab Switching Logic
         function switchTab(tabName, btnElement) {
             document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -933,6 +1012,53 @@
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        function renderMovesTable() {
+            const tbody = document.getElementById('movesTableBody');
+            const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
+            tbody.innerHTML = movesList.map(m => `
+                <tr>
+                    <td><strong>${m.name}</strong></td>
+                    <td><span class="badge type-${m.type.toLowerCase()}">${m.type}</span></td>
+                    <td>${m.category}</td>
+                    <td>${m.power}</td>
+                    <td>${m.accuracy}</td>
+                    <td>${m.desc}</td>
+                    <td class="admin-action-cell" style="display: ${isAdmin ? 'table-cell' : 'none'};">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="deleteEntry('move', ${m.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAbilitiesTable() {
+            const tbody = document.getElementById('abilitiesTableBody');
+            const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
+            tbody.innerHTML = abilitiesList.map(a => `
+                <tr>
+                    <td><strong>${a.name}</strong></td>
+                    <td>${a.desc}</td>
+                    <td class="admin-action-cell" style="display: ${isAdmin ? 'table-cell' : 'none'};">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="deleteEntry('ability', ${a.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderItemsTable() {
+            const tbody = document.getElementById('itemsTableBody');
+            const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
+            tbody.innerHTML = itemsList.map(i => `
+                <tr>
+                    <td><strong>${i.name}</strong></td>
+                    <td>${i.category}</td>
+                    <td>${i.desc}</td>
+                    <td class="admin-action-cell" style="display: ${isAdmin ? 'table-cell' : 'none'};">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="deleteEntry('item', ${i.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
         }
 
         function filterWildkin() {
@@ -1061,13 +1187,42 @@
             }
         }
 
+        function deleteEntry(type, id) {
+            if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                if (type === 'move') {
+                    movesList = movesList.filter(m => m.id !== id);
+                    localStorage.setItem('kindex_moves', JSON.stringify(movesList));
+                    renderMovesTable();
+                } else if (type === 'ability') {
+                    abilitiesList = abilitiesList.filter(a => a.id !== id);
+                    localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
+                    renderAbilitiesTable();
+                } else if (type === 'item') {
+                    itemsList = itemsList.filter(i => i.id !== id);
+                    localStorage.setItem('kindex_items', JSON.stringify(itemsList));
+                    renderItemsTable();
+                }
+            }
+        }
+
         function resetToDefaults() {
-            if (confirm("Reset all Wildkin back to the default list? Custom additions will be cleared.")) {
+            if (confirm("Reset all catalog entries back to the defaults? Custom additions will be cleared.")) {
                 wildkinList = JSON.parse(JSON.stringify(defaultWildkin));
+                movesList = JSON.parse(JSON.stringify(defaultMoves));
+                abilitiesList = JSON.parse(JSON.stringify(defaultAbilities));
+                itemsList = JSON.parse(JSON.stringify(defaultItems));
+
                 localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                localStorage.setItem('kindex_moves', JSON.stringify(movesList));
+                localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
+                localStorage.setItem('kindex_items', JSON.stringify(itemsList));
+
                 searchInput.value = '';
                 typeFilter.value = '';
                 renderGrid(wildkinList);
+                renderMovesTable();
+                renderAbilitiesTable();
+                renderItemsTable();
             }
         }
 
@@ -1081,6 +1236,44 @@
             document.getElementById('statSpeed').value = 50;
             updateFormStats();
             document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function openAddModalGeneric(type) {
+            activeGenericType = type;
+            document.getElementById('genericAddForm').reset();
+            
+            const titleElem = document.getElementById('genericModalTitle');
+            const gType = document.getElementById('genGroupType');
+            const gCat = document.getElementById('genGroupCategory');
+            const gPow = document.getElementById('genGroupPower');
+            const gAcc = document.getElementById('genGroupAccuracy');
+
+            gType.style.display = 'none';
+            gCat.style.display = 'none';
+            gPow.style.display = 'none';
+            gAcc.style.display = 'none';
+
+            if (type === 'move') {
+                titleElem.innerText = 'Add New Move';
+                gType.style.display = 'block';
+                gCat.style.display = 'block';
+                gPow.style.display = 'block';
+                gAcc.style.display = 'block';
+            } else if (type === 'ability') {
+                titleElem.innerText = 'Add New Ability';
+            } else if (type === 'item') {
+                titleElem.innerText = 'Add New Item';
+                gCat.style.display = 'block';
+                // Customize category options for items
+                const catSelect = document.getElementById('genCategory');
+                catSelect.innerHTML = `
+                    <option value="Held Item">Held Item</option>
+                    <option value="Consumable">Consumable</option>
+                    <option value="Key Item">Key Item</option>
+                `;
+            }
+
+            document.getElementById('genericAddModal').style.display = 'flex';
         }
 
         function closeModalDirect(modalId) {
@@ -1138,7 +1331,53 @@
             closeModalDirect('addModal');
         }
 
+        function handleGenericFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('genName').value;
+            const desc = document.getElementById('genDesc').value;
+
+            if (activeGenericType === 'move') {
+                const newItem = {
+                    id: Date.now(),
+                    name: name,
+                    type: document.getElementById('genType').value,
+                    category: document.getElementById('genCategory').value,
+                    power: document.getElementById('genPower').value || '—',
+                    accuracy: document.getElementById('genAccuracy').value || '—',
+                    desc: desc
+                };
+                movesList.push(newItem);
+                localStorage.setItem('kindex_moves', JSON.stringify(movesList));
+                renderMovesTable();
+            } else if (activeGenericType === 'ability') {
+                const newItem = {
+                    id: Date.now(),
+                    name: name,
+                    desc: desc
+                };
+                abilitiesList.push(newItem);
+                localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
+                renderAbilitiesTable();
+            } else if (activeGenericType === 'item') {
+                const newItem = {
+                    id: Date.now(),
+                    name: name,
+                    category: document.getElementById('genCategory').value,
+                    desc: desc
+                };
+                itemsList.push(newItem);
+                localStorage.setItem('kindex_items', JSON.stringify(itemsList));
+                renderItemsTable();
+            }
+
+            closeModalDirect('genericAddModal');
+        }
+
+        // Initial Render
         renderGrid(wildkinList);
+        renderMovesTable();
+        renderAbilitiesTable();
+        renderItemsTable();
         checkAdminAccess();
     </script>
 </body>
