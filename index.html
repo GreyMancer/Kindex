@@ -971,6 +971,7 @@
                 sessionStorage.setItem('kindex_is_admin', 'true');
             }
             if (sessionStorage.getItem('kindex_is_admin') === 'true') {
+                // Only show admin controls for Wildkin initially since Wildkin tab is default active
                 document.getElementById('adminControls').style.display = 'flex';
                 document.getElementById('adminDeleteContainer').style.display = 'block';
                 document.querySelectorAll('.admin-only-btn').forEach(b => b.style.display = 'inline-block');
@@ -984,6 +985,17 @@
             
             document.getElementById('tab-' + tabName).classList.add('active');
             btnElement.classList.add('active');
+
+            // Toggle header Wildkin admin controls based on active tab
+            const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
+            if (isAdmin) {
+                const adminControls = document.getElementById('adminControls');
+                if (tabName === 'wildkin') {
+                    adminControls.style.display = 'flex';
+                } else {
+                    adminControls.style.display = 'none';
+                }
+            }
         }
 
         const grid = document.getElementById('wildkinGrid');
@@ -1264,7 +1276,6 @@
             } else if (type === 'item') {
                 titleElem.innerText = 'Add New Item';
                 gCat.style.display = 'block';
-                // Customize category options for items
                 const catSelect = document.getElementById('genCategory');
                 catSelect.innerHTML = `
                     <option value="Held Item">Held Item</option>
