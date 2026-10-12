@@ -293,3 +293,663 @@
         .modal-right-pane {
             display: flex;
             flex-direction: column;
+            gap: 20px;
+        }
+
+        .lore-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #edf2f7;
+            text-align: left;
+        }
+
+        .lore-box h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stats-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            text-align: left;
+        }
+
+        @media(min-width: 480px) {
+            .stats-wrapper {
+                grid-template-columns: 1fr 180px;
+                align-items: center;
+            }
+        }
+
+        .stats-container {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #edf2f7;
+        }
+
+        .stats-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stats-container h4 {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bst-badge {
+            background: #e6f4ea;
+            color: #137333;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-name {
+            width: 90px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            width: 35px;
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .stat-bar-bg {
+            flex-grow: 1;
+            background-color: #e2e8f0;
+            border-radius: 6px;
+            height: 8px;
+            margin-left: 12px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #51cf66);
+            border-radius: 6px;
+        }
+
+        .chart-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #edf2f7;
+        }
+
+        .radar-svg text {
+            font-size: 8px;
+            font-weight: bold;
+            fill: #4a5568;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius);
+            font-family: inherit;
+            resize: vertical;
+            height: 80px;
+            outline: none;
+            background: white;
+        }
+
+        .stats-inputs {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #edf2f7;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .slider-row label {
+            width: 90px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0 !important;
+        }
+
+        .slider-row input[type="range"] {
+            flex-grow: 1;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .slider-row span {
+            width: 35px;
+            text-align: right;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Kindex</h1>
+        <p>Explore and search the official Wildkin catalog</p>
+        
+        <div class="admin-controls" id="adminControls">
+            <button class="btn" onclick="openAddModal()">+ Add New Wildkin</button>
+            <button class="btn btn-outline" onclick="resetToDefaults()">Reset Defaults</button>
+        </div>
+    </header>
+
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search by name or number (#001)..." oninput="filterWildkin()">
+        <select id="typeFilter" onchange="filterWildkin()">
+            <option value="">All Types</option>
+            <option value="Flame">Flame</option>
+            <option value="Tide">Tide</option>
+            <option value="Bloom">Bloom</option>
+            <option value="Spark">Spark</option>
+            <option value="Frost">Frost</option>
+            <option value="Gale">Gale</option>
+            <option value="Stone">Stone</option>
+            <option value="Iron">Iron</option>
+            <option value="Venom">Venom</option>
+            <option value="Swarm">Swarm</option>
+            <option value="Might">Might</option>
+            <option value="Psyche">Psyche</option>
+            <option value="Shade">Shade</option>
+            <option value="Ghoul">Ghoul</option>
+            <option value="Fae">Fae</option>
+            <option value="Neutral">Neutral</option>
+            <option value="Wyrm">Wyrm</option>
+            <option value="Cosmic">Cosmic</option>
+        </select>
+    </div>
+
+    <div class="grid" id="wildkinGrid"></div>
+
+    <!-- Detail Modal -->
+    <div class="modal" id="detailModal" onclick="closeModal(event, 'detailModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModalDirect('detailModal')">&times;</button>
+            
+            <div class="modal-grid-layout">
+                <div class="modal-left-pane">
+                    <img id="modalImg" src="" alt="" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                    <p id="modalNumber" class="number" style="margin: 0 0 4px 0;"></p>
+                    <h2 id="modalName" style="margin: 0 0 12px 0; font-size: 1.8rem;"></h2>
+                    <div id="modalBadges" class="badges" style="justify-content: flex-start; margin-bottom: 20px;"></div>
+                    
+                    <div id="adminDeleteContainer" style="width: 100%; display: none; margin-top: auto;">
+                        <button class="btn btn-danger" style="width: 100%;" onclick="deleteCurrentWildkin()">Delete Wildkin</button>
+                    </div>
+                </div>
+
+                <div class="modal-right-pane">
+                    <div class="lore-box">
+                        <h4>Abilities, Lore & Details</h4>
+                        <p id="modalDescription" style="color: var(--text-main); font-size: 0.95rem; margin: 0; line-height: 1.6;"></p>
+                    </div>
+
+                    <div class="stats-wrapper">
+                        <div class="stats-container">
+                            <div class="stats-header-flex">
+                                <h4>Base Stats</h4>
+                                <span id="modalBst" class="bst-badge">BST: 0</span>
+                            </div>
+                            <div id="modalStats"></div>
+                        </div>
+                        <div class="chart-box">
+                            <svg id="modalRadarChart" class="radar-svg" width="180" height="180" viewBox="0 0 200 200"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Wildkin Modal -->
+    <div class="modal" id="addModal" onclick="closeModal(event, 'addModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModalDirect('addModal')">&times;</button>
+            <h2 style="margin-top: 0;">Add New Wildkin</h2>
+            <form id="addWildkinForm" onsubmit="handleFormSubmit(event)">
+                <div class="form-group">
+                    <label for="addNumber">Dex Number (e.g. #004)</label>
+                    <input type="text" id="addNumber" required placeholder="#004">
+                </div>
+                <div class="form-group">
+                    <label for="addName">Name</label>
+                    <input type="text" id="addName" required placeholder="Wildkin Name">
+                </div>
+                <div class="form-group">
+                    <label for="addType1">Primary Type</label>
+                    <select id="addType1" required>
+                        <option value="Flame">Flame</option>
+                        <option value="Tide">Tide</option>
+                        <option value="Bloom">Bloom</option>
+                        <option value="Spark">Spark</option>
+                        <option value="Frost">Frost</option>
+                        <option value="Gale">Gale</option>
+                        <option value="Stone">Stone</option>
+                        <option value="Iron">Iron</option>
+                        <option value="Venom">Venom</option>
+                        <option value="Swarm">Swarm</option>
+                        <option value="Might">Might</option>
+                        <option value="Psyche">Psyche</option>
+                        <option value="Shade">Shade</option>
+                        <option value="Ghoul">Ghoul</option>
+                        <option value="Fae">Fae</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="Wyrm">Wyrm</option>
+                        <option value="Cosmic">Cosmic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addType2">Secondary Type (Optional)</label>
+                    <select id="addType2">
+                        <option value="">None</option>
+                        <option value="Flame">Flame</option>
+                        <option value="Tide">Tide</option>
+                        <option value="Bloom">Bloom</option>
+                        <option value="Spark">Spark</option>
+                        <option value="Frost">Frost</option>
+                        <option value="Gale">Gale</option>
+                        <option value="Stone">Stone</option>
+                        <option value="Iron">Iron</option>
+                        <option value="Venom">Venom</option>
+                        <option value="Swarm">Swarm</option>
+                        <option value="Might">Might</option>
+                        <option value="Psyche">Psyche</option>
+                        <option value="Shade">Shade</option>
+                        <option value="Ghoul">Ghoul</option>
+                        <option value="Fae">Fae</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="Wyrm">Wyrm</option>
+                        <option value="Cosmic">Cosmic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addImageFile">Upload Image from Device</label>
+                    <input type="file" id="addImageFile" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="addDesc">Abilities, Lore & Details</label>
+                    <textarea id="addDesc" required placeholder="Write lore, abilities, and other details here..."></textarea>
+                </div>
+
+                <div class="stats-header-flex" style="margin-bottom: 5px;">
+                    <label style="font-weight: 700; font-size: 0.85rem; color: var(--text-main);">Adjust Base Stats</label>
+                    <span id="formBst" class="bst-badge">BST: 300</span>
+                </div>
+                <div class="stats-inputs">
+                    <div class="slider-row">
+                        <label for="statHp">HP</label>
+                        <input type="range" id="statHp" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valHp">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statAttack">Attack</label>
+                        <input type="range" id="statAttack" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valAttack">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statDefense">Defense</label>
+                        <input type="range" id="statDefense" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valDefense">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statPower">Power</label>
+                        <input type="range" id="statPower" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valPower">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statResistance">Resistance</label>
+                        <input type="range" id="statResistance" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valResistance">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statSpeed">Speed</label>
+                        <input type="range" id="statSpeed" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valSpeed">50</span>
+                    </div>
+                    
+                    <div style="margin-top: 15px; display: flex; justify-content: center;">
+                        <svg id="formRadarChart" class="radar-svg" width="180" height="180" viewBox="0 0 200 200"></svg>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%;">Save Wildkin</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const defaultWildkin = [
+            {
+                id: 1,
+                number: "#001",
+                name: "Flitlick",
+                types: ["Flame"],
+                img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
+                description: "The fire serpent. It uses the spear-like blade on its tail to channel intense heat, while its armored head plate protects it from backfiring embers.",
+                stats: { hp: 45, attack: 65, defense: 50, power: 60, resistance: 45, speed: 85 }
+            },
+            {
+                id: 2,
+                number: "#002",
+                name: "Slinkmail",
+                types: ["Flame", "Iron"],
+                img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png",
+                description: "The evolved form of Flitlick. Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
+                stats: { hp: 65, attack: 85, defense: 75, power: 70, resistance: 60, speed: 95 }
+            },
+            {
+                id: 3,
+                number: "#003",
+                name: "Serphelme",
+                types: ["Flame", "Iron"],
+                img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
+                description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
+                stats: { hp: 85, attack: 115, defense: 95, power: 85, resistance: 80, speed: 105 }
+            }
+        ];
+
+        let wildkinList = JSON.parse(localStorage.getItem('kindex_wildkin')) || defaultWildkin;
+        let currentSelectedId = null;
+        const ADMIN_SECRET = "Arsenal"; 
+        const statLabelsMap = { hp: 'HP', attack: 'Attack', defense: 'Defense', power: 'Power', resistance: 'Resistance', speed: 'Speed' };
+
+        function checkAdminAccess() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === ADMIN_SECRET) {
+                sessionStorage.setItem('kindex_is_admin', 'true');
+            }
+            if (sessionStorage.getItem('kindex_is_admin') === 'true') {
+                document.getElementById('adminControls').style.display = 'flex';
+                document.getElementById('adminDeleteContainer').style.display = 'block';
+            }
+        }
+
+        const grid = document.getElementById('wildkinGrid');
+        const searchInput = document.getElementById('searchInput');
+        const typeFilter = document.getElementById('typeFilter');
+
+        function renderGrid(items) {
+            grid.innerHTML = '';
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px 0; font-size: 1.1rem;">No Wildkin found matching your search.</p>';
+                return;
+            }
+
+            items.forEach(mon => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openModal(mon);
+
+                const badgesHtml = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
+
+                card.innerHTML = `
+                    <span class="number">${mon.number}</span>
+                    <img src="${mon.img}" alt="${mon.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                    <h3>${mon.name}</h3>
+                    <div class="badges">${badgesHtml}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterWildkin() {
+            const query = searchInput.value.toLowerCase();
+            const selectedType = typeFilter.value;
+
+            const filtered = wildkinList.filter(mon => {
+                const matchesSearch = mon.name.toLowerCase().includes(query) || mon.number.toLowerCase().includes(query);
+                const matchesType = selectedType === "" || mon.types.includes(selectedType);
+                return matchesSearch && matchesType;
+            });
+
+            renderGrid(filtered);
+        }
+
+        function renderRadarChart(statsObj, svgElementId) {
+            const svg = document.getElementById(svgElementId);
+            const cx = 100, cy = 100, radius = 65;
+            const keys = ['hp', 'attack', 'defense', 'power', 'resistance', 'speed'];
+            const labels = ['HP', 'Attack', 'Defense', 'Power', 'Resistance', 'Speed'];
+            const maxVal = 255;
+
+            let svgContent = '';
+
+            for (let step = 1; step <= 3; step++) {
+                const r = (radius / 3) * step;
+                let points = '';
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i - Math.PI / 2;
+                    const x = cx + r * Math.cos(angle);
+                    const y = cy + r * Math.sin(angle);
+                    points += `${x},${y} `;
+                }
+                svgContent += `<polygon points="${points}" fill="none" stroke="#e2e8f0" stroke-width="1" />`;
+            }
+
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                const x2 = cx + radius * Math.cos(angle);
+                const y2 = cy + radius * Math.sin(angle);
+                svgContent += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#cbd5e1" stroke-width="1" />`;
+
+                const labelRadius = radius + 18;
+                const lx = cx + labelRadius * Math.cos(angle);
+                const ly = cy + labelRadius * Math.sin(angle);
+                svgContent += `<text x="${lx}" y="${ly}">${labels[i]}</text>`;
+            }
+
+            let statPoints = '';
+            keys.forEach((key, i) => {
+                const val = Math.min(Math.max(statsObj[key] || 0, 0), maxVal);
+                const ratio = val / maxVal;
+                const r = radius * ratio;
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                const x = cx + r * Math.cos(angle);
+                const y = cy + r * Math.sin(angle);
+                statPoints += `${x},${y} `;
+
+                svgContent += `<circle cx="${x}" cy="${y}" r="3" fill="#2b8a3e" />`;
+            });
+
+            svgContent += `<polygon points="${statPoints}" fill="rgba(43, 138, 62, 0.3)" stroke="#2b8a3e" stroke-width="2" />`;
+            svg.innerHTML = svgContent;
+        }
+
+        function openModal(mon) {
+            currentSelectedId = mon.id;
+            document.getElementById('modalImg').src = mon.img;
+            document.getElementById('modalNumber').innerText = mon.number;
+            document.getElementById('modalName').innerText = mon.name;
+            document.getElementById('modalDescription').innerText = mon.description;
+            
+            const badgesContainer = document.getElementById('modalBadges');
+            badgesContainer.innerHTML = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
+
+            const statsContainer = document.getElementById('modalStats');
+            let totalBst = 0;
+            statsContainer.innerHTML = Object.entries(mon.stats).map(([key, val]) => {
+                totalBst += val;
+                const percentage = Math.min(Math.round((val / 150) * 100), 100);
+                return `
+                    <div class="stat-row">
+                        <span class="stat-name">${statLabelsMap[key]}</span>
+                        <span class="stat-value">${val}</span>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modalBst').innerText = `BST: ${totalBst}`;
+            renderRadarChart(mon.stats, 'modalRadarChart');
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function updateFormStats() {
+            const stats = {
+                hp: parseInt(document.getElementById('statHp').value),
+                attack: parseInt(document.getElementById('statAttack').value),
+                defense: parseInt(document.getElementById('statDefense').value),
+                power: parseInt(document.getElementById('statPower').value),
+                resistance: parseInt(document.getElementById('statResistance').value),
+                speed: parseInt(document.getElementById('statSpeed').value)
+            };
+
+            document.getElementById('valHp').innerText = stats.hp;
+            document.getElementById('valAttack').innerText = stats.attack;
+            document.getElementById('valDefense').innerText = stats.defense;
+            document.getElementById('valPower').innerText = stats.power;
+            document.getElementById('valResistance').innerText = stats.resistance;
+            document.getElementById('valSpeed').innerText = stats.speed;
+
+            const bst = Object.values(stats).reduce((a, b) => a + b, 0);
+            document.getElementById('formBst').innerText = `BST: ${bst}`;
+
+            renderRadarChart(stats, 'formRadarChart');
+        }
+
+        function deleteCurrentWildkin() {
+            if (confirm("Are you sure you want to delete this Wildkin?")) {
+                wildkinList = wildkinList.filter(mon => mon.id !== currentSelectedId);
+                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                filterWildkin();
+                closeModalDirect('detailModal');
+            }
+        }
+
+        function resetToDefaults() {
+            if (confirm("Reset all Wildkin back to the default list? Custom additions will be cleared.")) {
+                wildkinList = JSON.parse(JSON.stringify(defaultWildkin));
+                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                searchInput.value = '';
+                typeFilter.value = '';
+                renderGrid(wildkinList);
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById('addWildkinForm').reset();
+            document.getElementById('statHp').value = 50;
+            document.getElementById('statAttack').value = 50;
+            document.getElementById('statDefense').value = 50;
+            document.getElementById('statPower').value = 50;
+            document.getElementById('statResistance').value = 50;
+            document.getElementById('statSpeed').value = 50;
+            updateFormStats();
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function closeModalDirect(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function closeModal(e, modalId) {
+            if (e.target.id === modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('addImageFile');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    saveNewWildkinRecord(uploadEvent.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveNewWildkinRecord(imageSrc) {
+            const type1 = document.getElementById('addType1').value;
+            const type2 = document.getElementById('addType2').value;
+            let types = [type1];
+            if (type2 && type2 !== type1) {
+                types.push(type2);
+            }
+
+            const newWildkin = {
+                id: Date.now(),
+                number: document.getElementById('addNumber').value,
+                name: document.getElementById('addName').value,
+                types: types,
+                img: imageSrc,
+                description: document.getElementById('addDesc').value,
+                stats: {
+                    hp: parseInt(document.getElementById('statHp').value),
+                    attack: parseInt(document.getElementById('statAttack').value),
+                    defense: parseInt(document.getElementById('statDefense').value),
+                    power: parseInt(document.getElementById('statPower').value),
+                    resistance: parseInt(document.getElementById('statResistance').value),
+                    speed: parseInt(document.getElementById('statSpeed').value)
+                }
+            };
+
+            wildkinList.push(newWildkin);
+            localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+            filterWildkin();
+            closeModalDirect('addModal');
+        }
+
+        renderGrid(wildkinList);
+        checkAdminAccess();
+    </script>
+</body>
+</html>
