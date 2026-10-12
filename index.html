@@ -229,7 +229,7 @@
             background: white;
             padding: 35px;
             border-radius: calc(var(--radius) + 4px);
-            max-width: 520px;
+            max-width: 540px;
             width: 100%;
             text-align: center;
             position: relative;
@@ -265,7 +265,7 @@
             color: var(--text-main);
         }
 
-        /* Stat Bars & Chart Styling */
+        /* Stat Bars & Chart Layout */
         .stats-wrapper {
             display: grid;
             grid-template-columns: 1fr;
@@ -274,9 +274,9 @@
             text-align: left;
         }
 
-        @media(min-width: 480px) {
+        @media(min-width: 500px) {
             .stats-wrapper {
-                grid-template-columns: 1fr 140px;
+                grid-template-columns: 1fr 180px;
                 align-items: center;
             }
         }
@@ -350,20 +350,35 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             background: #f8fafc;
             padding: 15px;
             border-radius: 12px;
             border: 1px solid #edf2f7;
         }
 
-        .chart-box span {
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            margin-top: 10px;
             font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-top: 8px;
-            letter-spacing: 0.5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .legend-color-box {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            margin-right: 6px;
+            display: inline-block;
         }
 
         /* Form styling */
@@ -490,8 +505,8 @@
                     <div id="modalStats"></div>
                 </div>
                 <div class="chart-box">
-                    <svg id="modalPieChart" width="90" height="90" viewBox="0 0 32 32"></svg>
-                    <span>Stat Spread</span>
+                    <svg id="modalPieChart" width="80" height="80" viewBox="0 0 32 32"></svg>
+                    <div id="modalLegend" class="chart-legend"></div>
                 </div>
             </div>
 
@@ -563,8 +578,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="addImg">Image Path / URL</label>
-                    <input type="text" id="addImg" required placeholder="images/filename.png">
+                    <label for="addImageFile">Upload Image from Device</label>
+                    <input type="file" id="addImageFile" accept="image/*" required>
                 </div>
                 <div class="form-group">
                     <label for="addDesc">Description / Lore</label>
@@ -607,8 +622,9 @@
                         <span id="valSpeed">50</span>
                     </div>
                     
-                    <div style="margin-top: 15px; text-align: center;">
+                    <div style="margin-top: 15px; display: flex; flex-direction: column; align-items: center;">
                         <svg id="formPieChart" width="80" height="80" viewBox="0 0 32 32"></svg>
+                        <div id="formLegend" class="chart-legend"></div>
                     </div>
                 </div>
 
@@ -651,6 +667,8 @@
         let wildkinList = JSON.parse(localStorage.getItem('kindex_wildkin')) || defaultWildkin;
         let currentSelectedId = null;
         const ADMIN_SECRET = "Arsenal"; 
+        const statColors = ['#2b8a3e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+        const statLabelsMap = { hp: 'HP', attack: 'Attack', defense: 'Defense', power: 'Power', resistance: 'Resistance', speed: 'Speed' };
 
         function checkAdminAccess() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -704,36 +722,49 @@
             renderGrid(filtered);
         }
 
-        function generatePieChartSvg(statsObj, svgElementId) {
+        function renderChartAndLegend(statsObj, svgElementId, legendElementId) {
             const svg = document.getElementById(svgElementId);
-            const values = Object.values(statsObj);
-            const total = values.reduce((sum, val) => sum + val, 0);
+            const legend = document.getElementById(legendElementId);
+            const entries = Object.entries(statsObj);
+            const total = entries.reduce((sum, [, val]) => sum + val, 0);
 
             if (total === 0) {
                 svg.innerHTML = '<circle cx="16" cy="16" r="15.9155" fill="#e2e8f0" />';
+                legend.innerHTML = '';
                 return;
             }
 
-            const colors = ['#2b8a3e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
             let cumulativePercent = 0;
             let svgContent = '';
+            let legendContent = '';
 
-            values.forEach((val, idx) => {
+            entries.forEach(([key, val], idx) => {
                 const percent = val / total;
                 const dashArray = `${percent * 100} ${100 - (percent * 100)}`;
                 const dashOffset = -cumulativePercent * 100;
+                const color = statColors[idx % statColors.length];
+                const labelName = statLabelsMap[key];
 
                 svgContent += `
                     <circle cx="16" cy="16" r="15.9155" fill="transparent" 
-                        stroke="${colors[idx % colors.length]}" 
+                        stroke="${color}" 
                         stroke-width="7" 
                         stroke-dasharray="${dashArray}" 
                         stroke-dashoffset="${dashOffset}" />
                 `;
+
+                legendContent += `
+                    <div class="legend-item">
+                        <span><span class="legend-color-box" style="background-color: ${color};"></span>${labelName}</span>
+                        <span>${val}</span>
+                    </div>
+                `;
+
                 cumulativePercent += percent;
             });
 
             svg.innerHTML = svgContent;
+            legend.innerHTML = legendContent;
         }
 
         function openModal(mon) {
@@ -747,15 +778,13 @@
             badgesContainer.innerHTML = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
 
             const statsContainer = document.getElementById('modalStats');
-            const statLabels = { hp: 'HP', attack: 'Attack', defense: 'Defense', power: 'Power', resistance: 'Resistance', speed: 'Speed' };
-            
             let totalBst = 0;
             statsContainer.innerHTML = Object.entries(mon.stats).map(([key, val]) => {
                 totalBst += val;
                 const percentage = Math.min(Math.round((val / 150) * 100), 100);
                 return `
                     <div class="stat-row">
-                        <span class="stat-name">${statLabels[key]}</span>
+                        <span class="stat-name">${statLabelsMap[key]}</span>
                         <span class="stat-value">${val}</span>
                         <div class="stat-bar-bg">
                             <div class="stat-bar-fill" style="width: ${percentage}%"></div>
@@ -765,7 +794,7 @@
             }).join('');
 
             document.getElementById('modalBst').innerText = `BST: ${totalBst}`;
-            generatePieChartSvg(mon.stats, 'modalPieChart');
+            renderChartAndLegend(mon.stats, 'modalPieChart', 'modalLegend');
             document.getElementById('detailModal').style.display = 'flex';
         }
 
@@ -789,7 +818,7 @@
             const bst = Object.values(stats).reduce((a, b) => a + b, 0);
             document.getElementById('formBst').innerText = `BST: ${bst}`;
 
-            generatePieChartSvg(stats, 'formPieChart');
+            renderChartAndLegend(stats, 'formPieChart', 'formLegend');
         }
 
         function deleteCurrentWildkin() {
@@ -835,7 +864,19 @@
 
         function handleFormSubmit(e) {
             e.preventDefault();
+            const fileInput = document.getElementById('addImageFile');
+            const file = fileInput.files[0];
 
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    saveNewWildkinRecord(uploadEvent.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveNewWildkinRecord(imageSrc) {
             const type1 = document.getElementById('addType1').value;
             const type2 = document.getElementById('addType2').value;
             let types = [type1];
@@ -848,7 +889,7 @@
                 number: document.getElementById('addNumber').value,
                 name: document.getElementById('addName').value,
                 types: types,
-                img: document.getElementById('addImg').value,
+                img: imageSrc,
                 description: document.getElementById('addDesc').value,
                 stats: {
                     hp: parseInt(document.getElementById('statHp').value),
@@ -862,7 +903,6 @@
 
             wildkinList.push(newWildkin);
             localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
-            
             filterWildkin();
             closeModalDirect('addModal');
         }
