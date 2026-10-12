@@ -162,7 +162,7 @@
             align-items: center;
             gap: 15px;
             margin-bottom: 40px;
-            max-width: 800px;
+            max-width: 900px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -228,15 +228,14 @@
         }
 
         .type-filter-pill:hover {
-            border-color: var(--halloween-orange);
-            color: var(--text-main);
+            opacity: 0.85;
+            transform: translateY(-1px);
         }
 
         .type-filter-pill.active {
-            background-color: var(--halloween-orange);
-            color: #fff;
-            border-color: var(--halloween-orange);
-            box-shadow: 0 2px 8px rgba(255, 117, 24, 0.4);
+            outline: 3px solid #fff;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+            transform: scale(1.05);
         }
 
         .btn {
@@ -430,11 +429,11 @@
         .type-bloom { background-color: #27ae60; color: #fff; }
         .type-spark { background-color: #f1c40f; color: #111412; }
         .type-frost { background-color: #7fb3d5; color: #111412; }
-        .type-gale { background-color: #8e44ad; color: #fff; }
+        .type-gale { background-color: #3498db; color: #fff; } /* Sky Blue */
         .type-stone { background-color: #95a5a6; color: #111412; }
         .type-iron { background-color: #bdc3c7; color: #111412; }
         .type-venom { background-color: #8e44ad; color: #fff; }
-        .type-swarm { background-color: #d4ac0d; color: #111412; }
+        .type-swarm { background-color: #d4ac0d; color: #111412; } /* Bug Yellow */
         .type-might { background-color: #c0392b; color: #fff; }
         .type-psyche { background-color: #e84393; color: #fff; }
         .type-shade { background-color: #2c3e50; color: #fff; }
@@ -786,27 +785,27 @@
                 <input type="text" id="searchInput" placeholder="Search by name or number (#001)..." oninput="filterWildkin()">
             </div>
             
-            <!-- Custom Rune Type Filter Bar -->
+            <!-- Custom Colored Type Filter Bar -->
             <div class="type-filter-bar" id="typeFilterBar">
-                <div class="type-filter-pill active" onclick="selectTypeFilter('', this)">All Types</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Flame', this)">Flame</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Tide', this)">Tide</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Bloom', this)">Bloom</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Spark', this)">Spark</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Frost', this)">Frost</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Gale', this)">Gale</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Stone', this)">Stone</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Iron', this)">Iron</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Venom', this)">Venom</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Swarm', this)">Swarm</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Might', this)">Might</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Psyche', this)">Psyche</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Shade', this)">Shade</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Ghoul', this)">Ghoul</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Fae', this)">Fae</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Neutral', this)">Neutral</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Wyrm', this)">Wyrm</div>
-                <div class="type-filter-pill" onclick="selectTypeFilter('Cosmic', this)">Cosmic</div>
+                <div class="type-filter-pill active" onclick="selectTypeFilter('', this)" style="background: var(--bg-card); color: var(--text-main);">All Types</div>
+                <div class="type-filter-pill type-flame" onclick="selectTypeFilter('Flame', this)">Flame</div>
+                <div class="type-filter-pill type-tide" onclick="selectTypeFilter('Tide', this)">Tide</div>
+                <div class="type-filter-pill type-bloom" onclick="selectTypeFilter('Bloom', this)">Bloom</div>
+                <div class="type-filter-pill type-spark" onclick="selectTypeFilter('Spark', this)">Spark</div>
+                <div class="type-filter-pill type-frost" onclick="selectTypeFilter('Frost', this)">Frost</div>
+                <div class="type-filter-pill type-gale" onclick="selectTypeFilter('Gale', this)">Gale</div>
+                <div class="type-filter-pill type-stone" onclick="selectTypeFilter('Stone', this)">Stone</div>
+                <div class="type-filter-pill type-iron" onclick="selectTypeFilter('Iron', this)">Iron</div>
+                <div class="type-filter-pill type-venom" onclick="selectTypeFilter('Venom', this)">Venom</div>
+                <div class="type-filter-pill type-swarm" onclick="selectTypeFilter('Swarm', this)">Swarm</div>
+                <div class="type-filter-pill type-might" onclick="selectTypeFilter('Might', this)">Might</div>
+                <div class="type-filter-pill type-psyche" onclick="selectTypeFilter('Psyche', this)">Psyche</div>
+                <div class="type-filter-pill type-shade" onclick="selectTypeFilter('Shade', this)">Shade</div>
+                <div class="type-filter-pill type-ghoul" onclick="selectTypeFilter('Ghoul', this)">Ghoul</div>
+                <div class="type-filter-pill type-fae" onclick="selectTypeFilter('Fae', this)">Fae</div>
+                <div class="type-filter-pill type-neutral" onclick="selectTypeFilter('Neutral', this)">Neutral</div>
+                <div class="type-filter-pill type-wyrm" onclick="selectTypeFilter('Wyrm', this)">Wyrm</div>
+                <div class="type-filter-pill type-cosmic" onclick="selectTypeFilter('Cosmic', this)">Cosmic</div>
             </div>
         </div>
         <div class="grid" id="wildkinGrid"></div>
