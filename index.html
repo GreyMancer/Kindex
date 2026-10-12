@@ -61,7 +61,7 @@
             align-items: center;
         }
 
-        input[type="text"], select, input[type="number"] {
+        input[type="text"], select, input[type="number"], input[type="file"] {
             padding: 14px 20px;
             font-size: 1rem;
             border: 2px solid #e2e8f0;
@@ -72,6 +72,12 @@
             max-width: 100%;
             background: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            background: #f8fafc;
+            cursor: pointer;
         }
 
         input[type="text"]:focus, select:focus, input[type="number"]:focus {
@@ -498,8 +504,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="addImg">Image URL / Path</label>
-                    <input type="text" id="addImg" required placeholder="images/filename.png">
+                    <label for="addImageFile">Upload Image from Device</label>
+                    <input type="file" id="addImageFile" accept="image/*" required>
                 </div>
                 <div class="form-group">
                     <label for="addDesc">Description / Lore</label>
@@ -699,6 +705,19 @@
         function handleFormSubmit(e) {
             e.preventDefault();
 
+            const fileInput = document.getElementById('addImageFile');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    saveNewWildkinRecord(uploadEvent.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveNewWildkinRecord(imageSrc) {
             const type1 = document.getElementById('addType1').value;
             const type2 = document.getElementById('addType2').value;
             let types = [type1];
@@ -711,7 +730,7 @@
                 number: document.getElementById('addNumber').value,
                 name: document.getElementById('addName').value,
                 types: types,
-                img: document.getElementById('addImg').value,
+                img: imageSrc,
                 description: document.getElementById('addDesc').value,
                 stats: {
                     hp: parseInt(document.getElementById('statHp').value),
