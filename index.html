@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kindex</title>
+    <title>Kindex - Catalog of Wildkin</title>
     <style>
         :root {
             --bg-deep: #0b0f0d;
@@ -18,8 +18,7 @@
             --border-iron: #2b3830;
             --shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             --radius: 12px;
-            --halloween-orange: #ff7518;
-            --halloween-purple: #6a0dad;
+            --accent-green: #2ecc71;
         }
 
         body {
@@ -27,67 +26,83 @@
             background-color: var(--bg-deep);
             color: var(--text-main);
             margin: 0;
-            padding: 40px 20px;
+            padding: 40px 20px 40px 80px;
             background-image: radial-gradient(circle at 50% 0%, #17221b 0%, var(--bg-deep) 70%);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            transition: padding-left 0.3s ease;
         }
 
-        /* Halloween Corner Cobwebs & Spooky Accents */
-        body::before {
-            content: "🕸️";
+        body.sidebar-open {
+            padding-left: 360px;
+        }
+
+        /* Sidebar Navigation / Tools Drawer */
+        .sidebar {
             position: fixed;
-            top: 10px;
-            left: 10px;
-            font-size: 3rem;
-            opacity: 0.4;
-            pointer-events: none;
-            z-index: 999;
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border-iron);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+            z-index: 1001;
+            transition: left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
         }
 
-        body::after {
-            content: "🕸️";
+        body.sidebar-open .sidebar {
+            left: 0;
+        }
+
+        .sidebar-toggle-btn {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            font-size: 3rem;
-            opacity: 0.4;
-            pointer-events: none;
-            z-index: 999;
-            transform: scaleX(-1);
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+            top: 20px;
+            left: 20px;
+            background: var(--bg-panel);
+            color: var(--primary);
+            border: 1px solid var(--border-iron);
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1002;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
         }
 
-        /* Floating Jack-o'-Lantern Badges in Bottom Corners */
-        .halloween-corner-bl {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            font-size: 2.2rem;
-            opacity: 0.8;
-            pointer-events: none;
-            z-index: 999;
-            animation: floatPumpkin 3s ease-in-out infinite alternate;
-            filter: drop-shadow(0 0 8px var(--halloween-orange));
+        .sidebar-toggle-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg-card);
         }
 
-        .halloween-corner-br {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            font-size: 2.2rem;
-            opacity: 0.8;
-            pointer-events: none;
-            z-index: 999;
-            animation: floatPumpkin 3s ease-in-out infinite alternate-reverse;
-            filter: drop-shadow(0 0 8px var(--halloween-orange));
+        .sidebar h3 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 1.3rem;
+            border-bottom: 1px solid var(--border-iron);
+            padding-bottom: 12px;
         }
 
-        @keyframes floatPumpkin {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-8px); }
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-section label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
         }
 
         header {
@@ -97,48 +112,29 @@
         }
 
         header h1 {
-            margin: 0 0 8px 0;
+            margin: 0 0 4px 0;
             color: var(--primary);
             font-size: 3.2rem;
             letter-spacing: 1.5px;
             font-weight: 800;
             text-transform: uppercase;
-            text-shadow: 0 2px 15px rgba(255, 117, 24, 0.25);
+        }
+
+        .subheader-catalog {
+            color: var(--accent-green);
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 6px 0;
         }
 
         header p {
             color: var(--text-muted);
-            margin: 0 0 15px 0;
+            margin: 0 0 25px 0;
             font-size: 1.1rem;
             font-style: italic;
             letter-spacing: 0.5px;
-        }
-
-        /* Map Button Section Styling */
-        .header-actions {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .btn-map {
-            display: inline-block;
-            padding: 10px 22px;
-            background-color: var(--halloween-orange);
-            color: #fff;
-            text-decoration: none;
-            border-radius: var(--radius);
-            font-weight: 700;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(255, 117, 24, 0.3);
-        }
-
-        .btn-map:hover {
-            background-color: #e06210;
-            transform: translateY(-1px);
         }
 
         /* Horizontal Navigation Tabs */
@@ -164,16 +160,16 @@
         }
 
         .nav-tab-btn:hover {
-            border-color: var(--halloween-orange);
-            color: var(--halloween-orange);
+            border-color: var(--primary);
+            color: var(--primary);
             background-color: var(--bg-card);
         }
 
         .nav-tab-btn.active {
-            background: linear-gradient(135deg, var(--halloween-orange), #d35400);
-            color: #fff;
-            border-color: var(--halloween-orange);
-            box-shadow: 0 4px 15px rgba(255, 117, 24, 0.4);
+            background: linear-gradient(135deg, var(--primary), #947119);
+            color: #111412;
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(197, 155, 39, 0.3);
         }
 
         .admin-controls {
@@ -219,11 +215,12 @@
         input[type="file"] {
             padding: 10px;
             cursor: pointer;
+            font-size: 0.85rem;
         }
 
         input[type="text"]:focus, select:focus, input[type="number"]:focus {
-            border-color: var(--halloween-orange);
-            box-shadow: 0 0 0 3px rgba(255, 117, 24, 0.25), inset 0 2px 4px rgba(0,0,0,0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.2), inset 0 2px 4px rgba(0,0,0,0.2);
         }
 
         /* Custom Visual Type Filter Bar */
@@ -261,7 +258,7 @@
 
         .type-filter-pill.active {
             outline: 3px solid #fff;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
             transform: scale(1.05);
         }
 
@@ -354,8 +351,8 @@
 
         .card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 117, 24, 0.15);
-            border-color: var(--halloween-orange);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(197, 155, 39, 0.15);
+            border-color: var(--primary);
         }
 
         .card img {
@@ -492,7 +489,7 @@
             max-width: 850px;
             width: 100%;
             position: relative;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 117, 24, 0.1);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 20px rgba(197, 155, 39, 0.1);
             max-height: 90vh;
             overflow-y: auto;
             color: var(--text-main);
@@ -516,8 +513,8 @@
         }
         .close-btn:hover {
             background: var(--bg-card);
-            color: var(--halloween-orange);
-            border-color: var(--halloween-orange);
+            color: var(--primary);
+            border-color: var(--primary);
         }
 
         /* Two-Column Detail Modal Layout */
@@ -673,6 +670,47 @@
             dominant-baseline: central;
         }
 
+        /* Evolution Chain styling */
+        .evolution-box {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-iron);
+            text-align: left;
+            margin-top: 15px;
+        }
+
+        .evolution-box h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .evo-flex {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .evo-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-iron);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .evo-item:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
         /* Form styling */
         .form-group {
             margin-bottom: 15px;
@@ -730,7 +768,7 @@
         .slider-row input[type="range"] {
             flex-grow: 1;
             cursor: pointer;
-            accent-color: var(--halloween-orange);
+            accent-color: var(--primary);
         }
 
         .slider-row span {
@@ -740,21 +778,31 @@
         }
     </style>
 </head>
-<body>
+<body id="pageBody">
 
-    <!-- Halloween Floating Corner Decorations -->
-    <div class="halloween-corner-bl">🎃</div>
-    <div class="halloween-corner-br">🦇</div>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">📁</button>
+
+    <!-- Side Bar Drawer -->
+    <aside class="sidebar" id="sidebarDrawer">
+        <h3>Catalog Tools</h3>
+        
+        <div class="sidebar-section">
+            <label>World Map / Reference Viewer</label>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 12px 0;">Open the interactive viewer pop-up to inspect the world map or upload a new one.</p>
+            <button class="btn" style="width: 100%; font-size: 0.9rem;" onclick="openMapModal()">Open Map Viewer</button>
+        </div>
+
+        <div class="sidebar-section" style="margin-top: auto;">
+            <button class="btn btn-outline" style="width: 100%; font-size: 0.85rem;" onclick="toggleSidebar()">Close Drawer</button>
+        </div>
+    </aside>
 
     <header>
         <h1>Kindex</h1>
-        <p>Wildkin Catalog</p>
+        <h2 class="subheader-catalog">Catalog of Wildkin</h2>
+        <p>A Compendium of Mythic Wildkin and Folklore</p>
         
-        <!-- Action Button Container -->
-        <div class="header-actions">
-            <a href="map.html" class="btn-map">View Map</a>
-        </div>
-
         <!-- Horizontal Navigation Tabs -->
         <nav class="nav-tabs">
             <button class="nav-tab-btn active" onclick="switchTab('wildkin', this)">Wildkin</button>
@@ -867,6 +915,27 @@
         </div>
     </div>
 
+    <!-- Map / Image Viewer Popup Modal -->
+    <div class="modal" id="mapModal" onclick="closeModal(event, 'mapModal')">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 900px; text-align: center;">
+            <button class="close-btn" onclick="closeModalDirect('mapModal')">&times;</button>
+            <h2 style="margin-top: 0; color: var(--primary);">Wildkin World Map</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Explore the regions where wildkin roam or upload a custom map image below.</p>
+            
+            <div style="margin-bottom: 20px;">
+                <label class="btn btn-outline" style="cursor: pointer; display: inline-block; font-size: 0.9rem;">
+                    📁 Upload / Change Map Image
+                    <input type="file" id="mapImageFile" accept="image/*" style="display: none;" onchange="loadCustomMap(event)">
+                </label>
+            </div>
+
+            <div style="background: var(--bg-panel); border: 1px solid var(--border-iron); border-radius: var(--radius); padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 350px;">
+                <img id="mapDisplayImg" src="" alt="World Map" style="max-width: 100%; max-height: 550px; object-fit: contain; border-radius: 8px; display: none;">
+                <div id="mapPlaceholderText" style="color: var(--text-muted); font-style: italic;">No map image uploaded yet. Click "Upload / Change Map Image" above to add one!</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Detail Modal (Wildkin) -->
     <div class="modal" id="detailModal" onclick="closeModal(event, 'detailModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -879,7 +948,8 @@
                     <h2 id="modalName" style="margin: 0 0 12px 0; font-size: 1.8rem; color: var(--text-main);"></h2>
                     <div id="modalBadges" class="badges" style="justify-content: flex-start; margin-bottom: 15px;"></div>
 
-                    <div id="adminDeleteContainer" style="width: 100%; display: none; margin-top: auto;">
+                    <div id="adminActionButtons" style="width: 100%; display: none; margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+                        <button class="btn" style="width: 100%; background: var(--bg-card); color: var(--primary); border: 1px solid var(--primary);" onclick="openEditModal()">Edit Wildkin</button>
                         <button class="btn btn-danger" style="width: 100%;" onclick="deleteCurrentWildkin()">Delete Wildkin</button>
                     </div>
                 </div>
@@ -902,16 +972,22 @@
                             <svg id="modalRadarChart" class="radar-svg" width="180" height="180" viewBox="0 0 200 200"></svg>
                         </div>
                     </div>
+
+                    <!-- Evolution Chain Box -->
+                    <div class="evolution-box" id="modalEvoContainer" style="display:none;">
+                        <h4>Evolution Lineage</h4>
+                        <div class="evo-flex" id="modalEvoList"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Wildkin Modal -->
+    <!-- Add / Edit Wildkin Modal -->
     <div class="modal" id="addModal" onclick="closeModal(event, 'addModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModalDirect('addModal')">&times;</button>
-            <h2 style="margin-top: 0; color: var(--primary);">Add New Wildkin</h2>
+            <h2 id="addModalHeader" style="margin-top: 0; color: var(--primary);">Add New Wildkin</h2>
             <form id="addWildkinForm" onsubmit="handleFormSubmit(event)">
                 <div class="form-group">
                     <label for="addNumber">Dex Number (e.g. #004)</label>
@@ -920,6 +996,10 @@
                 <div class="form-group">
                     <label for="addName">Name</label>
                     <input type="text" id="addName" required placeholder="Wildkin Name">
+                </div>
+                <div class="form-group">
+                    <label for="addEvolutionLine">Evolution Line Group (e.g. Flitlick Family)</label>
+                    <input type="text" id="addEvolutionLine" placeholder="Leave blank or name family group">
                 </div>
                 <div class="form-group">
                     <label for="addType1">Primary Type</label>
@@ -969,8 +1049,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="addImageFile">Upload Image from Device</label>
-                    <input type="file" id="addImageFile" accept="image/*" required>
+                    <label for="addImageFile">Upload Image from Device <span id="imageOptionalNote" style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Optional when editing)</span></label>
+                    <input type="file" id="addImageFile" accept="image/*">
                 </div>
                 <div class="form-group">
                     <label for="addDesc">Abilities, Lore & Details</label>
@@ -1018,7 +1098,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn" style="width: 100%;">Save Wildkin</button>
+                <button type="submit" class="btn" id="addSubmitBtn" style="width: 100%;">Save Wildkin</button>
             </form>
         </div>
     </div>
@@ -1090,6 +1170,7 @@
                 number: "#001",
                 name: "Flitlick",
                 types: ["Flame"],
+                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
                 description: "The fire serpent. It uses the spear-like blade on its tail to channel intense heat, while its armored head plate protects it from backfiring embers.",
                 stats: { hp: 45, attack: 65, defense: 50, power: 60, resistance: 45, speed: 85 }
@@ -1099,8 +1180,9 @@
                 number: "#002",
                 name: "Slinkmail",
                 types: ["Flame", "Iron"],
+                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png",
-                description: "Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
+                description: "The evolved form of Flitlick. Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
                 stats: { hp: 65, attack: 85, defense: 75, power: 70, resistance: 60, speed: 95 }
             },
             {
@@ -1108,8 +1190,9 @@
                 number: "#003",
                 name: "Serphelme",
                 types: ["Flame", "Iron"],
+                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
-                description: "It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
+                description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
                 stats: { hp: 85, attack: 115, defense: 95, power: 85, resistance: 80, speed: 105 }
             }
         ];
@@ -1135,10 +1218,47 @@
         let itemsList = JSON.parse(localStorage.getItem('kindex_items')) || defaultItems;
 
         let currentSelectedId = null;
+        let editingWildkinId = null; // Tracks if we are editing an existing Wildkin
         let activeGenericType = null;
         let selectedTypeFilterValue = "";
         const ADMIN_SECRET = "Arsenal"; 
         const statLabelsMap = { hp: 'HP', attack: 'Attack', defense: 'Defense', power: 'Power', resistance: 'Resistance', speed: 'Speed' };
+
+        function toggleSidebar() {
+            const body = document.getElementById('pageBody');
+            body.classList.toggle('sidebar-open');
+        }
+
+        function openMapModal() {
+            document.getElementById('mapModal').style.display = 'flex';
+        }
+
+        function loadCustomMap(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const mapImg = document.getElementById('mapDisplayImg');
+                    const mapText = document.getElementById('mapPlaceholderText');
+                    mapImg.src = e.target.result;
+                    mapImg.style.display = 'block';
+                    mapText.style.display = 'none';
+                    localStorage.setItem('kindex_custom_map', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedMap = localStorage.getItem('kindex_custom_map');
+            if (savedMap) {
+                const mapImg = document.getElementById('mapDisplayImg');
+                const mapText = document.getElementById('mapPlaceholderText');
+                mapImg.src = savedMap;
+                mapImg.style.display = 'block';
+                mapText.style.display = 'none';
+            }
+        });
 
         function checkAdminAccess() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -1147,7 +1267,7 @@
             }
             if (sessionStorage.getItem('kindex_is_admin') === 'true') {
                 document.getElementById('adminControls').style.display = 'flex';
-                document.getElementById('adminDeleteContainer').style.display = 'block';
+                document.getElementById('adminActionButtons').style.display = 'flex';
                 document.querySelectorAll('.admin-only-btn').forEach(b => b.style.display = 'inline-block');
                 document.querySelectorAll('.admin-action-cell').forEach(c => c.style.display = 'table-cell');
             }
@@ -1307,10 +1427,10 @@
                 const y = cy + r * Math.sin(angle);
                 statPoints += `${x},${y} `;
 
-                svgContent += `<circle cx="${x}" cy="${y}" r="3.5" fill="#ff7518" />`;
+                svgContent += `<circle cx="${x}" cy="${y}" r="3.5" fill="#c59b27" />`;
             });
 
-            svgContent += `<polygon points="${statPoints}" fill="rgba(255, 117, 24, 0.2)" stroke="#ff7518" stroke-width="2" />`;
+            svgContent += `<polygon points="${statPoints}" fill="rgba(197, 155, 39, 0.2)" stroke="#c59b27" stroke-width="2" />`;
             svg.innerHTML = svgContent;
         }
 
@@ -1343,7 +1463,28 @@
             document.getElementById('modalBst').innerText = `BST: ${totalBst}`;
             renderRadarChart(mon.stats, 'modalRadarChart');
 
+            const evoContainer = document.getElementById('modalEvoContainer');
+            const evoList = document.getElementById('modalEvoList');
+            if (mon.evolutionLine) {
+                const family = wildkinList.filter(m => m.evolutionLine === mon.evolutionLine);
+                if (family.length > 1) {
+                    evoContainer.style.display = 'block';
+                    evoList.innerHTML = family.map(famMon => `
+                        <div class="evo-item" onclick="openModalById(${famMon.id})">${famMon.number} ${famMon.name}</div>
+                    `).join('');
+                } else {
+                    evoContainer.style.display = 'none';
+                }
+            } else {
+                evoContainer.style.display = 'none';
+            }
+
             document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function openModalById(id) {
+            const mon = wildkinList.find(m => m.id === id);
+            if (mon) openModal(mon);
         }
 
         function updateFormStats() {
@@ -1423,6 +1564,12 @@
         }
 
         function openAddModal() {
+            editingWildkinId = null; // New entry mode
+            document.getElementById('addModalHeader').innerText = "Add New Wildkin";
+            document.getElementById('addSubmitBtn').innerText = "Save Wildkin";
+            document.getElementById('addImageFile').required = true;
+            document.getElementById('imageOptionalNote').style.display = 'none';
+
             document.getElementById('addWildkinForm').reset();
             document.getElementById('statHp').value = 50;
             document.getElementById('statAttack').value = 50;
@@ -1431,6 +1578,35 @@
             document.getElementById('statResistance').value = 50;
             document.getElementById('statSpeed').value = 50;
             updateFormStats();
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function openEditModal() {
+            const mon = wildkinList.find(m => m.id === currentSelectedId);
+            if (!mon) return;
+
+            editingWildkinId = mon.id; // Edit mode
+            document.getElementById('addModalHeader').innerText = `Edit ${mon.name}`;
+            document.getElementById('addSubmitBtn').innerText = "Update Wildkin";
+            document.getElementById('addImageFile').required = false;
+            document.getElementById('imageOptionalNote').style.display = 'inline';
+
+            document.getElementById('addNumber').value = mon.number;
+            document.getElementById('addName').value = mon.name;
+            document.getElementById('addEvolutionLine').value = mon.evolutionLine || '';
+            document.getElementById('addType1').value = mon.types[0] || 'Flame';
+            document.getElementById('addType2').value = mon.types[1] || '';
+            document.getElementById('addDesc').value = mon.description;
+
+            document.getElementById('statHp').value = mon.stats.hp || 50;
+            document.getElementById('statAttack').value = mon.stats.attack || 50;
+            document.getElementById('statDefense').value = mon.stats.defense || 50;
+            document.getElementById('statPower').value = mon.stats.power || 50;
+            document.getElementById('statResistance').value = mon.stats.resistance || 50;
+            document.getElementById('statSpeed').value = mon.stats.speed || 50;
+
+            updateFormStats();
+            closeModalDirect('detailModal');
             document.getElementById('addModal').style.display = 'flex';
         }
 
@@ -1489,13 +1665,21 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(uploadEvent) {
-                    saveNewWildkinRecord(uploadEvent.target.result);
+                    saveOrUpdateWildkinRecord(uploadEvent.target.result);
                 };
                 reader.readAsDataURL(file);
+            } else {
+                // If editing and no new image was uploaded, preserve existing image
+                let existingImg = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';
+                if (editingWildkinId) {
+                    const existingMon = wildkinList.find(m => m.id === editingWildkinId);
+                    if (existingMon) existingImg = existingMon.img;
+                }
+                saveOrUpdateWildkinRecord(existingImg);
             }
         }
 
-        function saveNewWildkinRecord(imageSrc) {
+        function saveOrUpdateWildkinRecord(imageSrc) {
             const type1 = document.getElementById('addType1').value;
             const type2 = document.getElementById('addType2').value;
             let types = [type1];
@@ -1503,24 +1687,42 @@
                 types.push(type2);
             }
 
-            const newWildkin = {
-                id: Date.now(),
-                number: document.getElementById('addNumber').value,
-                name: document.getElementById('addName').value,
-                types: types,
-                img: imageSrc,
-                description: document.getElementById('addDesc').value,
-                stats: {
-                    hp: parseInt(document.getElementById('statHp').value),
-                    attack: parseInt(document.getElementById('statAttack').value),
-                    defense: parseInt(document.getElementById('statDefense').value),
-                    power: parseInt(document.getElementById('statPower').value),
-                    resistance: parseInt(document.getElementById('statResistance').value),
-                    speed: parseInt(document.getElementById('statSpeed').value)
-                }
+            const statsObj = {
+                hp: parseInt(document.getElementById('statHp').value),
+                attack: parseInt(document.getElementById('statAttack').value),
+                defense: parseInt(document.getElementById('statDefense').value),
+                power: parseInt(document.getElementById('statPower').value),
+                resistance: parseInt(document.getElementById('statResistance').value),
+                speed: parseInt(document.getElementById('statSpeed').value)
             };
 
-            wildkinList.push(newWildkin);
+            if (editingWildkinId) {
+                // Update existing record
+                const index = wildkinList.findIndex(m => m.id === editingWildkinId);
+                if (index !== -1) {
+                    wildkinList[index].number = document.getElementById('addNumber').value;
+                    wildkinList[index].name = document.getElementById('addName').value;
+                    wildkinList[index].types = types;
+                    wildkinList[index].evolutionLine = document.getElementById('addEvolutionLine').value.trim();
+                    wildkinList[index].img = imageSrc;
+                    wildkinList[index].description = document.getElementById('addDesc').value;
+                    wildkinList[index].stats = statsObj;
+                }
+            } else {
+                // Create new record
+                const newWildkin = {
+                    id: Date.now(),
+                    number: document.getElementById('addNumber').value,
+                    name: document.getElementById('addName').value,
+                    types: types,
+                    evolutionLine: document.getElementById('addEvolutionLine').value.trim(),
+                    img: imageSrc,
+                    description: document.getElementById('addDesc').value,
+                    stats: statsObj
+                };
+                wildkinList.push(newWildkin);
+            }
+
             localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
             filterWildkin();
             closeModalDirect('addModal');
