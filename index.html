@@ -126,15 +126,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin: 0 0 6px 0;
-        }
-
-        header p {
-            color: var(--text-muted);
             margin: 0 0 25px 0;
-            font-size: 1.1rem;
-            font-style: italic;
-            letter-spacing: 0.5px;
         }
 
         /* Horizontal Navigation Tabs */
@@ -670,47 +662,6 @@
             dominant-baseline: central;
         }
 
-        /* Evolution Chain styling */
-        .evolution-box {
-            background: var(--bg-panel);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border-iron);
-            text-align: left;
-            margin-top: 15px;
-        }
-
-        .evolution-box h4 {
-            margin: 0 0 10px 0;
-            font-size: 0.8rem;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .evo-flex {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .evo-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border-iron);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .evo-item:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
         /* Form styling */
         .form-group {
             margin-bottom: 15px;
@@ -801,7 +752,6 @@
     <header>
         <h1>Kindex</h1>
         <h2 class="subheader-catalog">Catalog of Wildkin</h2>
-        <p>A Compendium of Mythic Wildkin and Folklore</p>
         
         <!-- Horizontal Navigation Tabs -->
         <nav class="nav-tabs">
@@ -813,7 +763,6 @@
 
         <div class="admin-controls" id="adminControls">
             <button class="btn" onclick="openAddModal()">+ Add New Wildkin</button>
-            <button class="btn btn-outline" onclick="resetToDefaults()">Reset Defaults</button>
         </div>
     </header>
 
@@ -972,12 +921,6 @@
                             <svg id="modalRadarChart" class="radar-svg" width="180" height="180" viewBox="0 0 200 200"></svg>
                         </div>
                     </div>
-
-                    <!-- Evolution Chain Box -->
-                    <div class="evolution-box" id="modalEvoContainer" style="display:none;">
-                        <h4>Evolution Lineage</h4>
-                        <div class="evo-flex" id="modalEvoList"></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -996,10 +939,6 @@
                 <div class="form-group">
                     <label for="addName">Name</label>
                     <input type="text" id="addName" required placeholder="Wildkin Name">
-                </div>
-                <div class="form-group">
-                    <label for="addEvolutionLine">Evolution Line Group (e.g. Flitlick Family)</label>
-                    <input type="text" id="addEvolutionLine" placeholder="Leave blank or name family group">
                 </div>
                 <div class="form-group">
                     <label for="addType1">Primary Type</label>
@@ -1170,7 +1109,6 @@
                 number: "#001",
                 name: "Flitlick",
                 types: ["Flame"],
-                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
                 description: "The fire serpent. It uses the spear-like blade on its tail to channel intense heat, while its armored head plate protects it from backfiring embers.",
                 stats: { hp: 45, attack: 65, defense: 50, power: 60, resistance: 45, speed: 85 }
@@ -1180,7 +1118,6 @@
                 number: "#002",
                 name: "Slinkmail",
                 types: ["Flame", "Iron"],
-                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png",
                 description: "The evolved form of Flitlick. Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
                 stats: { hp: 65, attack: 85, defense: 75, power: 70, resistance: 60, speed: 95 }
@@ -1190,7 +1127,6 @@
                 number: "#003",
                 name: "Serphelme",
                 types: ["Flame", "Iron"],
-                evolutionLine: "Flitlick Line",
                 img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png",
                 description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
                 stats: { hp: 85, attack: 115, defense: 95, power: 85, resistance: 80, speed: 105 }
@@ -1218,7 +1154,7 @@
         let itemsList = JSON.parse(localStorage.getItem('kindex_items')) || defaultItems;
 
         let currentSelectedId = null;
-        let editingWildkinId = null; // Tracks if we are editing an existing Wildkin
+        let editingWildkinId = null;
         let activeGenericType = null;
         let selectedTypeFilterValue = "";
         const ADMIN_SECRET = "Arsenal"; 
@@ -1463,28 +1399,7 @@
             document.getElementById('modalBst').innerText = `BST: ${totalBst}`;
             renderRadarChart(mon.stats, 'modalRadarChart');
 
-            const evoContainer = document.getElementById('modalEvoContainer');
-            const evoList = document.getElementById('modalEvoList');
-            if (mon.evolutionLine) {
-                const family = wildkinList.filter(m => m.evolutionLine === mon.evolutionLine);
-                if (family.length > 1) {
-                    evoContainer.style.display = 'block';
-                    evoList.innerHTML = family.map(famMon => `
-                        <div class="evo-item" onclick="openModalById(${famMon.id})">${famMon.number} ${famMon.name}</div>
-                    `).join('');
-                } else {
-                    evoContainer.style.display = 'none';
-                }
-            } else {
-                evoContainer.style.display = 'none';
-            }
-
             document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        function openModalById(id) {
-            const mon = wildkinList.find(m => m.id === id);
-            if (mon) openModal(mon);
         }
 
         function updateFormStats() {
@@ -1537,34 +1452,8 @@
             }
         }
 
-        function resetToDefaults() {
-            if (confirm("Reset all catalog entries back to the defaults? Custom additions will be cleared.")) {
-                wildkinList = JSON.parse(JSON.stringify(defaultWildkin));
-                movesList = JSON.parse(JSON.stringify(defaultMoves));
-                abilitiesList = JSON.parse(JSON.stringify(defaultAbilities));
-                itemsList = JSON.parse(JSON.stringify(defaultItems));
-
-                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
-                localStorage.setItem('kindex_moves', JSON.stringify(movesList));
-                localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
-                localStorage.setItem('kindex_items', JSON.stringify(itemsList));
-
-                searchInput.value = '';
-                selectedTypeFilterValue = '';
-                document.querySelectorAll('.type-filter-pill').forEach((p, idx) => {
-                    if (idx === 0) p.classList.add('active');
-                    else p.classList.remove('active');
-                });
-
-                renderGrid(wildkinList);
-                renderMovesTable();
-                renderAbilitiesTable();
-                renderItemsTable();
-            }
-        }
-
         function openAddModal() {
-            editingWildkinId = null; // New entry mode
+            editingWildkinId = null;
             document.getElementById('addModalHeader').innerText = "Add New Wildkin";
             document.getElementById('addSubmitBtn').innerText = "Save Wildkin";
             document.getElementById('addImageFile').required = true;
@@ -1585,7 +1474,7 @@
             const mon = wildkinList.find(m => m.id === currentSelectedId);
             if (!mon) return;
 
-            editingWildkinId = mon.id; // Edit mode
+            editingWildkinId = mon.id;
             document.getElementById('addModalHeader').innerText = `Edit ${mon.name}`;
             document.getElementById('addSubmitBtn').innerText = "Update Wildkin";
             document.getElementById('addImageFile').required = false;
@@ -1593,7 +1482,6 @@
 
             document.getElementById('addNumber').value = mon.number;
             document.getElementById('addName').value = mon.name;
-            document.getElementById('addEvolutionLine').value = mon.evolutionLine || '';
             document.getElementById('addType1').value = mon.types[0] || 'Flame';
             document.getElementById('addType2').value = mon.types[1] || '';
             document.getElementById('addDesc').value = mon.description;
@@ -1669,7 +1557,6 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                // If editing and no new image was uploaded, preserve existing image
                 let existingImg = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';
                 if (editingWildkinId) {
                     const existingMon = wildkinList.find(m => m.id === editingWildkinId);
@@ -1697,25 +1584,21 @@
             };
 
             if (editingWildkinId) {
-                // Update existing record
                 const index = wildkinList.findIndex(m => m.id === editingWildkinId);
                 if (index !== -1) {
                     wildkinList[index].number = document.getElementById('addNumber').value;
                     wildkinList[index].name = document.getElementById('addName').value;
                     wildkinList[index].types = types;
-                    wildkinList[index].evolutionLine = document.getElementById('addEvolutionLine').value.trim();
                     wildkinList[index].img = imageSrc;
                     wildkinList[index].description = document.getElementById('addDesc').value;
                     wildkinList[index].stats = statsObj;
                 }
             } else {
-                // Create new record
                 const newWildkin = {
                     id: Date.now(),
                     number: document.getElementById('addNumber').value,
                     name: document.getElementById('addName').value,
                     types: types,
-                    evolutionLine: document.getElementById('addEvolutionLine').value.trim(),
                     img: imageSrc,
                     description: document.getElementById('addDesc').value,
                     stats: statsObj
