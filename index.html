@@ -1179,7 +1179,11 @@
                     mapImg.src = e.target.result;
                     mapImg.style.display = 'block';
                     mapText.style.display = 'none';
-                    localStorage.setItem('kindex_custom_map', e.target.result);
+                    try {
+                        localStorage.setItem('kindex_custom_map', e.target.result);
+                    } catch (err) {
+                        alert("Map file is too large for browser storage limit!");
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -1428,7 +1432,11 @@
         function deleteCurrentWildkin() {
             if (confirm("Are you sure you want to delete this Wildkin?")) {
                 wildkinList = wildkinList.filter(mon => mon.id !== currentSelectedId);
-                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                try {
+                    localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                } catch (e) {
+                    alert("Storage error.");
+                }
                 filterWildkin();
                 closeModalDirect('detailModal');
             }
@@ -1436,18 +1444,22 @@
 
         function deleteEntry(type, id) {
             if (confirm(`Are you sure you want to delete this ${type}?`)) {
-                if (type === 'move') {
-                    movesList = movesList.filter(m => m.id !== id);
-                    localStorage.setItem('kindex_moves', JSON.stringify(movesList));
-                    renderMovesTable();
-                } else if (type === 'ability') {
-                    abilitiesList = abilitiesList.filter(a => a.id !== id);
-                    localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
-                    renderAbilitiesTable();
-                } else if (type === 'item') {
-                    itemsList = itemsList.filter(i => i.id !== id);
-                    localStorage.setItem('kindex_items', JSON.stringify(itemsList));
-                    renderItemsTable();
+                try {
+                    if (type === 'move') {
+                        movesList = movesList.filter(m => m.id !== id);
+                        localStorage.setItem('kindex_moves', JSON.stringify(movesList));
+                        renderMovesTable();
+                    } else if (type === 'ability') {
+                        abilitiesList = abilitiesList.filter(a => a.id !== id);
+                        localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
+                        renderAbilitiesTable();
+                    } else if (type === 'item') {
+                        itemsList = itemsList.filter(i => i.id !== id);
+                        localStorage.setItem('kindex_items', JSON.stringify(itemsList));
+                        renderItemsTable();
+                    }
+                } catch (e) {
+                    alert("Storage error.");
                 }
             }
         }
@@ -1545,17 +1557,52 @@
             }
         }
 
+        // Image compression utility to compress images down to 200x200 sprite size
+        function compressImageFile(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        }
+                    } else {
+                        if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Export as compressed WebP or JPEG
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    callback(compressedDataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function handleFormSubmit(e) {
             e.preventDefault();
             const fileInput = document.getElementById('addImageFile');
             const file = fileInput.files[0];
 
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(uploadEvent) {
-                    saveOrUpdateWildkinRecord(uploadEvent.target.result);
-                };
-                reader.readAsDataURL(file);
+                compressImageFile(file, function(compressedDataUrl) {
+                    saveOrUpdateWildkinRecord(compressedDataUrl);
+                });
             } else {
                 let existingImg = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';
                 if (editingWildkinId) {
@@ -1606,9 +1653,13 @@
                 wildkinList.push(newWildkin);
             }
 
-            localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
-            filterWildkin();
-            closeModalDirect('addModal');
+            try {
+                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                filterWildkin();
+                closeModalDirect('addModal');
+            } catch (err) {
+                alert("Storage limit reached! Even with compression, browser storage is full.");
+            }
         }
 
         function handleGenericFormSubmit(e) {
@@ -1616,41 +1667,44 @@
             const name = document.getElementById('genName').value;
             const desc = document.getElementById('genDesc').value;
 
-            if (activeGenericType === 'move') {
-                const newItem = {
-                    id: Date.now(),
-                    name: name,
-                    type: document.getElementById('genType').value,
-                    category: document.getElementById('genCategory').value,
-                    power: document.getElementById('genPower').value || '—',
-                    accuracy: document.getElementById('genAccuracy').value || '—',
-                    desc: desc
-                };
-                movesList.push(newItem);
-                localStorage.setItem('kindex_moves', JSON.stringify(movesList));
-                renderMovesTable();
-            } else if (activeGenericType === 'ability') {
-                const newItem = {
-                    id: Date.now(),
-                    name: name,
-                    desc: desc
-                };
-                abilitiesList.push(newItem);
-                localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
-                renderAbilitiesTable();
-            } else if (activeGenericType === 'item') {
-                const newItem = {
-                    id: Date.now(),
-                    name: name,
-                    category: document.getElementById('genCategory').value,
-                    desc: desc
-                };
-                itemsList.push(newItem);
-                localStorage.setItem('kindex_items', JSON.stringify(itemsList));
-                renderItemsTable();
+            try {
+                if (activeGenericType === 'move') {
+                    const newItem = {
+                        id: Date.now(),
+                        name: name,
+                        type: document.getElementById('genType').value,
+                        category: document.getElementById('genCategory').value,
+                        power: document.getElementById('genPower').value || '—',
+                        accuracy: document.getElementById('genAccuracy').value || '—',
+                        desc: desc
+                    };
+                    movesList.push(newItem);
+                    localStorage.setItem('kindex_moves', JSON.stringify(movesList));
+                    renderMovesTable();
+                } else if (activeGenericType === 'ability') {
+                    const newItem = {
+                        id: Date.now(),
+                        name: name,
+                        desc: desc
+                    };
+                    abilitiesList.push(newItem);
+                    localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
+                    renderAbilitiesTable();
+                } else if (activeGenericType === 'item') {
+                    const newItem = {
+                        id: Date.now(),
+                        name: name,
+                        category: document.getElementById('genCategory').value,
+                        desc: desc
+                    };
+                    itemsList.push(newItem);
+                    localStorage.setItem('kindex_items', JSON.stringify(itemsList));
+                    renderItemsTable();
+                }
+                closeModalDirect('genericAddModal');
+            } catch (err) {
+                alert("Storage error.");
             }
-
-            closeModalDirect('genericAddModal');
         }
 
         // Initial Render
