@@ -1103,6 +1103,9 @@
     </div>
 
     <script>
+        // ==========================================
+        // PERMANENT DEFAULT ENTRIES (Visible to all visitors)
+        // ==========================================
         const defaultWildkin = [
             {
                 id: 1,
@@ -1131,6 +1134,7 @@
                 description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
                 stats: { hp: 85, attack: 115, defense: 95, power: 85, resistance: 80, speed: 105 }
             }
+            // TIP: You can paste any of your additional custom Wildkin objects directly here in this array!
         ];
 
         const defaultMoves = [
@@ -1557,7 +1561,7 @@
             }
         }
 
-        // Updated image compression utility to preserve transparent backgrounds using PNG format
+        // Image compression utility preserving transparent background with PNG
         function compressImageFile(file, callback) {
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -1583,11 +1587,9 @@
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
-                    // Leave canvas transparent instead of filling with black/white
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Export as PNG to preserve transparent backgrounds
                     const compressedDataUrl = canvas.toDataURL('image/png');
                     callback(compressedDataUrl);
                 };
