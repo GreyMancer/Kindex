@@ -1557,7 +1557,7 @@
             }
         }
 
-        // Image compression utility to compress images down to 200x200 sprite size
+        // Updated image compression utility to preserve transparent backgrounds using PNG format
         function compressImageFile(file, callback) {
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -1583,10 +1583,12 @@
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
+                    // Leave canvas transparent instead of filling with black/white
+                    ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Export as compressed WebP or JPEG
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    // Export as PNG to preserve transparent backgrounds
+                    const compressedDataUrl = canvas.toDataURL('image/png');
                     callback(compressedDataUrl);
                 };
                 img.src = e.target.result;
