@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kindex - Catalog of Wildkin</title>
+    <title>WilderKin - Catalog of Wildkin</title>
     <style>
         :root {
             --bg-deep: #0b0f0d;
@@ -111,13 +111,13 @@
             position: relative;
         }
 
-        header h1 {
-            margin: 0 0 4px 0;
-            color: var(--primary);
-            font-size: 3.2rem;
-            letter-spacing: 1.5px;
-            font-weight: 800;
-            text-transform: uppercase;
+        .logo-img {
+            max-width: 420px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto 10px auto;
+            display: block;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
         }
 
         .subheader-catalog {
@@ -750,7 +750,8 @@
     </aside>
 
     <header>
-        <h1>Kindex</h1>
+        <!-- Replaced Title with WilderKin Logo -->
+        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAACAQABAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=" alt="WilderKin Logo" class="logo-img" id="mainLogo">
         <h2 class="subheader-catalog">Catalog of Wildkin</h2>
         
         <!-- Horizontal Navigation Tabs -->
@@ -1103,6 +1104,10 @@
     </div>
 
     <script>
+        // Embed the WilderKin logo directly into the page script securely via Base64
+        const wilderKinLogoBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAACAQABAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=";
+        document.getElementById('mainLogo').src = wilderKinLogoBase64;
+
         // ==========================================
         // PERMANENT DEFAULT ENTRIES (Visible to all visitors)
         // ==========================================
@@ -1134,7 +1139,6 @@
                 description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
                 stats: { hp: 85, attack: 115, defense: 95, power: 85, resistance: 80, speed: 105 }
             }
-            // TIP: You can paste any of your additional custom Wildkin objects directly here in this array!
         ];
 
         const defaultMoves = [
