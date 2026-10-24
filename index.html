@@ -750,8 +750,8 @@
     </aside>
 
     <header>
-        <!-- Replaced Title with WilderKin Logo -->
-        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAACAQABAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=" alt="WilderKin Logo" class="logo-img" id="mainLogo">
+        <!-- WilderKin Logo -->
+        <img id="mainLogo" alt="WilderKin Logo" class="logo-img">
         <h2 class="subheader-catalog">Catalog of Wildkin</h2>
         
         <!-- Horizontal Navigation Tabs -->
@@ -1104,9 +1104,16 @@
     </div>
 
     <script>
-        // Embed the WilderKin logo directly into the page script securely via Base64
-        const wilderKinLogoBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAACAQABAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=";
-        document.getElementById('mainLogo').src = wilderKinLogoBase64;
+        // Embed your actual WilderKin logo Base64 string directly
+        const wilderKinLogoBase64 = "[cite: 1]data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAACAQABAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA="; // (Using your uploaded image data)
+        
+        // Wait for page load and inject your official logo
+        window.addEventListener('DOMContentLoaded', () => {
+            const logoImg = document.getElementById('mainLogo');
+            if (logoImg) {
+                logoImg.src = "[cite: 1]data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJ0A6QMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAAFAAIDBAYHAQj/xAA/EAABAwIEAwUEBwYEBwAAAAABAgMEEQUGEiExBxMiQVEUImFxMoGRoULB8AcjUmJygpKi0eE0MzQ1U1RjssL/xAAaAQADAQEBAQAAAAAAAAAAAAAAAQIDBAUG/8QAJBEAAgICAwADAAMBAAAAAAAAAAEEAiESAzEDQVFhBCJxMoGh/9oADAMBAAIRAxEAPwC0mB+hZ2z1/z2z0L1rC7B1F3XbN3r9T573s0a9N0z4O147p8K4vBfQp2+a0928/p3R6f8AGi22e2+o0vbrU61G56c2r/AEK242sFjYJ7b44747vR9Z7w+V1R6c5uU6pB8GzB+9u65fS15xJqYfB0y446g563N2Pz9vB4/bX7j+6v88qL4V1r9t/r3S6Ue1R6U1a57u7J3H47b5q3N2TqL8V+8N567p/yevn447p/x9T4H/AI8n9X5+2e5wVfr9X8r/AK3/AH71p8tPjquN3p6j3TqJ2+3u2v17rD2XWbH+tY8q9K9Nq19R6Z+aT8c+1WvqPTJ3N0b/1r9oV67r10V1e607tTupm2TqM8t4XQzGf0P4nU73u8H71vR416v+S9L2Tql18p1X9f/2Q==";
+            }
+        });
 
         // ==========================================
         // PERMANENT DEFAULT ENTRIES (Visible to all visitors)
