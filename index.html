@@ -1239,7 +1239,7 @@
                 number: "#015",
                 name: "Blasticore",
                 types: ["Swarm", "Iron"],
-                img: "Blasticore.png",
+                img: "Blasticore.jpg",
                 description: "Features heavy defensive shields built into its carapace, allowing it to withstand high-impact collisions while charging down rivals.",
                 stats: { hp: 75, attack: 80, defense: 90, power: 60, resistance: 60, speed: 65 }
             },
@@ -1248,7 +1248,7 @@
                 number: "#016",
                 name: "Cragite",
                 types: ["Stone"],
-                img: "cragite test.png",
+                img: "cragite test.jpg",
                 description: "A small, secretive cavern dweller hiding beneath a coarse, earth-toned hood carved from natural rock and soil strata.",
                 stats: { hp: 50, attack: 55, defense: 60, power: 40, resistance: 50, speed: 40 }
             },
@@ -1257,7 +1257,7 @@
                 number: "#017",
                 name: "Koboulder",
                 types: ["Stone"],
-                img: "Koboulder.png",
+                img: "Koboulder.jpg",
                 description: "A mischievous stone-bearer that hoards jagged mineral chunks in a weathered pouch, hurling heavy projectiles at intruders.",
                 stats: { hp: 70, attack: 75, defense: 80, power: 60, resistance: 70, speed: 60 }
             },
@@ -1266,7 +1266,7 @@
                 number: "#018",
                 name: "Gobrune",
                 types: ["Stone", "Psyche"],
-                img: "Gobrune.png",
+                img: "Gobrune.jpg",
                 description: "Etched with ancient psychic runes across its stony armor, Gobrune manipulates heavy mineral boulders with pure telekinetic force.",
                 stats: { hp: 90, attack: 95, defense: 100, power: 80, resistance: 90, speed: 75 }
             },
@@ -1293,7 +1293,1890 @@
                 number: "#021",
                 name: "Empereagle",
                 types: ["Gale", "Neutral"],
-                img: "empereagle wing down bg remove.png",
+                img: "empereagle wing down bg remove.jpg",
+                description: "The majestic sovereign of the skies, crowned with golden plumage and ruling supreme over mountain peaks and cloudy domains.",
+                stats: { hp: 90, attack: 100, defense: 85, power: 90, resistance: 85, speed: 110 }
+            }
+        ];
+
+        const defaultMoves = [
+            { id: 1, name: "Inferno Slash", type: "Flame", category: "Physical", power: "85", accuracy: "100%", desc: "Slashes the target with a superheated blade, with a high chance to burn." },
+            { id: 2, name: "Iron Defense", type: "Iron", category: "Status", power: "—", accuracy: "—", desc: "Hardens the user's body surface to sharply raise Defense." }
+        ];
+
+        const defaultAbilities = [
+            { id: 1, name: "Blaze Armor", desc: "Protects the Wildkin from fire-type moves and boosts Power when hit by flames." },
+            { id: 2, name: "Segmented Shell", desc: "Heavy metallic plating reduces incoming physical damage by 15%." }
+        ];
+
+        const defaultItems = [
+            { id: 1, name: "Magma Stone", category: "Held Item", desc: "Boosts the power of Flame-type moves by 20% when held." },
+            { id: 2, name: "Revive Herb", category: "Consumable", desc: "Restores a fainted Wildkin to half its maximum HP during exploration." }
+        ];
+
+        let wildkinList = JSON.parse(localStorage.getItem('kindex_wildkin')) || defaultWildkin;
+        let movesList = JSON.parse(localStorage.getItem('kindex_moves')) || defaultMoves;
+        let abilitiesList = JSON.parse(localStorage.getItem('kindex_abilities')) || defaultAbilities;
+        let itemsList = JSON.parse(localStorage.getItem('kindex_items')) || defaultItems;
+
+        let currentSelectedId = null;
+        let editingWildkinId = null;
+        let activeGenericType = null;
+        let selectedTypeFilterValue = "";
+        const ADMIN_SECRET = "Arsenal"; 
+        const statLabelsMap = { hp: 'HP', attack: 'Attack', defense: 'Defense', power: 'Power', resistance: 'Resistance', speed: 'Speed' };
+
+        function toggleSidebar() {
+            const body = document.getElementById('pageBody');
+            body.classList.toggle('sidebar-open');
+        }
+
+        function openMapModal() {
+            document.getElementById('mapModal').style.display = 'flex';
+        }
+
+        function loadCustomMap(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const mapImg = document.getElementById('mapDisplayImg');
+                    const mapText = document.getElementById('mapPlaceholderText');
+                    mapImg.src = e.target.result;
+                    mapImg.style.display = 'block';
+                    mapText.style.display = 'none';
+                    try {
+                        localStorage.setItem('kindex_custom_map', e.target.result);
+                    } catch (err) {
+                        alert("Map file is too large for browser storage limit!");
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedMap = localStorage.getItem('kindex_custom_map');
+            if (savedMap) {
+                const mapImg = document.getElementById('mapDisplayImg');
+                const mapText = document.getElementById('mapPlaceholderText');
+                mapImg.src = savedMap;
+                mapImg.style.display = 'block';
+                mapText.style.display = 'none';
+            }
+        });
+
+        function checkAdminAccess() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === ADMIN_SECRET) {
+                sessionStorage.setItem('kindex_is_admin', 'true');
+            }
+            if (sessionStorage.getItem('kindex_is_admin') === 'true') {
+                document.getElementById('adminControls').style.display = 'flex';
+                document.getElementById('adminActionButtons').style.display = 'flex';
+                document.querySelectorAll('.admin-only-btn').forEach(b => b.style.display = 'inline-block');
+                document.querySelectorAll('.admin-action-cell').forEach(c => c.style.display = 'table-cell');
+            }
+        }
+
+        function switchTab(tabName, btnElement) {
+            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabName).classList.add('active');
+            btnElement.classList.add('active');
+
+            const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
+            if (isAdmin) {
+                const adminControls = document.getElementById('adminControls');
+                if (tabName === 'wildkin') {
+                    adminControls.style.display = 'flex';
+                } else {
+                    adminControls.style.display = 'none';
+                }
+            }
+        }
+
+        const grid = document.getElementById('wildkinGrid');
+        const searchInput = document.getElementById('searchInput');
+
+        function renderGrid(items) {
+            grid.innerHTML = '';
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px 0; font-size: 1.1rem;">No Wildkin found matching your search.</p>';
+                return;
+            }
+
+            items.forEach(mon => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openModal(mon);
+
+                const badgesHtml = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
+
+                card.innerHTML = `
+                    <span class="number">${mon.number}</span>
+                    <img src="${mon.img}" alt="${mon.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                    <h3>${mon.name}</h3>
+                    <div class="badges">${badgesHtml}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function selectTypeFilter(typeVal, pillElement) {
+            selectedTypeFilterValue = typeVal;
+            document.querySelectorAll('.type-filter-pill').forEach(p => p.classList.remove('active'));
+            pillElement.classList.add('active');
+            filterWildkin();
+        }
+
+        function filterWildkin() {
+            const query = searchInput.value.toLowerCase();
+
+            const filtered = wildkinList.filter(mon => {
+                const matchesSearch = mon.name.toLowerCase().includes(query) || mon.number.toLowerCase().includes(query);
+                const matchesType = selectedTypeFilterValue === "" || mon.types.includes(selectedTypeFilterValue);
+                return matchesSearch && matchesType;
+            });
+
+            renderGrid(filtered);
+        }
+
+        function renderMovesTable() {
+            const tbody = document.getElementById('movesTableBody');
+            const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
+            tbody.innerHTML = movesList.map(m => `
+                <tr>
+                    <td><strong>${m.name}</strong></td>
+                    <td><span class="badge type-${m.type.toLowerCase()}">${m.type}</span></td>
+                    <td>${m.category}</td>
+                    <td>${m.power}</td>
+                    <td>${m.accuracy}</td>
+                    <td>${m.desc}</td>
+                    <td class="admin-action-cell" style="display: ${isAdmin ? 'table-cell' : 'none'};">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="deleteEntry('move', ${m.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAbilitiesTable() {
+            const tbody = document.getElementById('abilitiesTableBody');
+            const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
+            tbody.innerHTML = abilitiesList.map(a => `
+                <tr>
+                    <td><strong>${a.name}</strong></td>
+                    <td>${a.desc}</td>
+                    <td class="admin-action-cell" style="display: ${isAdmin ? 'table-cell' : 'none'};">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="deleteEntry('ability', ${a.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderItemsTable() {
+            const tbody = document.getElementById('itemsTableBody');
+            const isAdmin = sessionStorage.getItem('kindex_is_admin') === 'true';
+            tbody.innerHTML = itemsList.map(i => `
+                <tr>
+                    <td><strong>${i.name}</strong></td>
+                    <td>${i.category}</td>
+                    <td>${i.desc}</td>
+                    <td class="admin-action-cell" style="display: ${isAdmin ? 'table-cell' : 'none'};">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="deleteEntry('item', ${i.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderRadarChart(statsObj, svgElementId) {
+            const svg = document.getElementById(svgElementId);
+            const cx = 100, cy = 100, radius = 65;
+            const keys = ['hp', 'attack', 'defense', 'power', 'resistance', 'speed'];
+            const labels = ['HP', 'Attack', 'Defense', 'Power', 'Resistance', 'Speed'];
+            const maxVal = 255;
+
+            let svgContent = '';
+
+            for (let step = 1; step <= 3; step++) {
+                const r = (radius / 3) * step;
+                let points = '';
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i - Math.PI / 2;
+                    const x = cx + r * Math.cos(angle);
+                    const y = cy + r * Math.sin(angle);
+                    points += `${x},${y} `;
+                }
+                svgContent += `<polygon points="${points}" fill="none" stroke="#2b3830" stroke-width="1" />`;
+            }
+
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                const x2 = cx + radius * Math.cos(angle);
+                const y2 = cy + radius * Math.sin(angle);
+                svgContent += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#2b3830" stroke-width="1" />`;
+
+                const labelRadius = radius + 18;
+                const lx = cx + labelRadius * Math.cos(angle);
+                const ly = cy + labelRadius * Math.sin(angle);
+                svgContent += `<text x="${lx}" y="${ly}">${labels[i]}</text>`;
+            }
+
+            let statPoints = '';
+            keys.forEach((key, i) => {
+                const val = Math.min(Math.max(statsObj[key] || 0, 0), maxVal);
+                const ratio = val / maxVal;
+                const r = radius * ratio;
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                const x = cx + r * Math.cos(angle);
+                const y = cy + r * Math.sin(angle);
+                statPoints += `${x},${y} `;
+
+                svgContent += `<circle cx="${x}" cy="${y}" r="3.5" fill="#c59b27" />`;
+            });
+
+            svgContent += `<polygon points="${statPoints}" fill="rgba(197, 155, 39, 0.2)" stroke="#c59b27" stroke-width="2" />`;
+            svg.innerHTML = svgContent;
+        }
+
+        function openModal(mon) {
+            currentSelectedId = mon.id;
+            document.getElementById('modalImg').src = mon.img;
+            document.getElementById('modalNumber').innerText = mon.number;
+            document.getElementById('modalName').innerText = mon.name;
+            document.getElementById('modalDescription').innerText = mon.description;
+            
+            const badgesContainer = document.getElementById('modalBadges');
+            badgesContainer.innerHTML = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
+
+            const statsContainer = document.getElementById('modalStats');
+            let totalBst = 0;
+            statsContainer.innerHTML = Object.entries(mon.stats).map(([key, val]) => {
+                totalBst += val;
+                const percentage = Math.min(Math.round((val / 150) * 100), 100);
+                return `
+                    <div class="stat-row">
+                        <span class="stat-name">${statLabelsMap[key]}</span>
+                        <span class="stat-value">${val}</span>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modalBst').innerText = `BST: ${totalBst}`;
+            renderRadarChart(mon.stats, 'modalRadarChart');
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function updateFormStats() {
+            const stats = {
+                hp: parseInt(document.getElementById('statHp').value),
+                attack: parseInt(document.getElementById('statAttack').value),
+                defense: parseInt(document.getElementById('statDefense').value),
+                power: parseInt(document.getElementById('statPower').value),
+                resistance: parseInt(document.getElementById('statResistance').value),
+                speed: parseInt(document.getElementById('statSpeed').value)
+            };
+
+            document.getElementById('valHp').innerText = stats.hp;
+            document.getElementById('valAttack').innerText = stats.attack;
+            document.getElementById('valDefense').innerText = stats.defense;
+            document.getElementById('valPower').innerText = stats.power;
+            document.getElementById('valResistance').innerText = stats.resistance;
+            document.getElementById('valSpeed').innerText = stats.speed;
+
+            const bst = Object.values(stats).reduce((a, b) => a + b, 0);
+            document.getElementById('formBst').innerText = `BST: ${bst}`;
+
+            renderRadarChart(stats, 'formRadarChart');
+        }
+
+        function deleteCurrentWildkin() {
+            if (confirm("Are you sure you want to delete this Wildkin?")) {
+                wildkinList = wildkinList.filter(mon => mon.id !== currentSelectedId);
+                try {
+                    localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                } catch (e) {
+                    alert("Storage error.");
+                }
+                filterWildkin();
+                closeModalDirect('detailModal');
+            }
+        }
+
+        function deleteEntry(type, id) {
+            if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                try {
+                    if (type === 'move') {
+                        movesList = movesList.filter(m => m.id !== id);
+                        localStorage.setItem('kindex_moves', JSON.stringify(movesList));
+                        renderMovesTable();
+                    } else if (type === 'ability') {
+                        abilitiesList = abilitiesList.filter(a => a.id !== id);
+                        localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
+                        renderAbilitiesTable();
+                    } else if (type === 'item') {
+                        itemsList = itemsList.filter(i => i.id !== id);
+                        localStorage.setItem('kindex_items', JSON.stringify(itemsList));
+                        renderItemsTable();
+                    }
+                } catch (e) {
+                    alert("Storage error.");
+                }
+            }
+        }
+
+        function openAddModal() {
+            editingWildkinId = null;
+            document.getElementById('addModalHeader').innerText = "Add New Wildkin";
+            document.getElementById('addSubmitBtn').innerText = "Save Wildkin";
+            document.getElementById('addImageFile').required = true;
+            document.getElementById('imageOptionalNote').style.display = 'none';
+
+            document.getElementById('addWildkinForm').reset();
+            document.getElementById('statHp').value = 50;
+            document.getElementById('statAttack').value = 50;
+            document.getElementById('statDefense').value = 50;
+            document.getElementById('statPower').value = 50;
+            document.getElementById('statResistance').value = 50;
+            document.getElementById('statSpeed').value = 50;
+            updateFormStats();
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function openEditModal() {
+            const mon = wildkinList.find(m => m.id === currentSelectedId);
+            if (!mon) return;
+
+            editingWildkinId = mon.id;
+            document.getElementById('addModalHeader').innerText = `Edit ${mon.name}`;
+            document.getElementById('addSubmitBtn').innerText = "Update Wildkin";
+            document.getElementById('addImageFile').required = false;
+            document.getElementById('imageOptionalNote').style.display = 'inline';
+
+            document.getElementById('addNumber').value = mon.number;
+            document.getElementById('addName').value = mon.name;
+            document.getElementById('addType1').value = mon.types[0] || 'Flame';
+            document.getElementById('addType2').value = mon.types[1] || '';
+            document.getElementById('addDesc').value = mon.description;
+
+            document.getElementById('statHp').value = mon.stats.hp || 50;
+            document.getElementById('statAttack').value = mon.stats.attack || 50;
+            document.getElementById('statDefense').value = mon.stats.defense || 50;
+            document.getElementById('statPower').value = mon.stats.power || 50;
+            document.getElementById('statResistance').value = mon.stats.resistance || 50;
+            document.getElementById('statSpeed').value = mon.stats.speed || 50;
+
+            updateFormStats();
+            closeModalDirect('detailModal');
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function openAddModalGeneric(type) {
+            activeGenericType = type;
+            document.getElementById('genericAddForm').reset();
+            
+            const titleElem = document.getElementById('genericModalTitle');
+            const gType = document.getElementById('genGroupType');
+            const gCat = document.getElementById('genGroupCategory');
+            const gPow = document.getElementById('genGroupPower');
+            const gAcc = document.getElementById('genGroupAccuracy');
+
+            gType.style.display = 'none';
+            gCat.style.display = 'none';
+            gPow.style.display = 'none';
+            gAcc.style.display = 'none';
+
+            if (type === 'move') {
+                titleElem.innerText = 'Add New Move';
+                gType.style.display = 'block';
+                gCat.style.display = 'block';
+                gPow.style.display = 'block';
+                gAcc.style.display = 'block';
+            } else if (type === 'ability') {
+                titleElem.innerText = 'Add New Ability';
+            } else if (type === 'item') {
+                titleElem.innerText = 'Add New Item';
+                gCat.style.display = 'block';
+                const catSelect = document.getElementById('genCategory');
+                catSelect.innerHTML = `
+                    <option value="Held Item">Held Item</option>
+                    <option value="Consumable">Consumable</option>
+                    <option value="Key Item">Key Item</option>
+                `;
+            }
+
+            document.getElementById('genericAddModal').style.display = 'flex';
+        }
+
+        function closeModalDirect(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function closeModal(e, modalId) {
+            if (e.target.id === modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+        }
+
+        // Image compression utility preserving transparent background with PNG
+        function compressImageFile(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        }
+                    } else {
+                        if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedDataUrl = canvas.toDataURL('image/png');
+                    callback(compressedDataUrl);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('addImageFile');
+            const file = fileInput.files[0];
+
+            if (file) {
+                compressImageFile(file, function(compressedDataUrl) {
+                    saveOrUpdateWildkinRecord(compressedDataUrl);
+                });
+            } else {
+                let existingImg = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';
+                if (editingWildkinId) {
+                    const existingMon = wildkinList.find(m => m.id === editingWildkinId);
+                    if (existingMon) existingImg = existingMon.img;
+                }
+                saveOrUpdateWildkinRecord(existingImg);
+            }
+        }
+
+        function saveOrUpdateWildkinRecord(imageSrc) {
+            const type1 = document.getElementById('addType1').value;
+            const type2 = document.getElementById('addType2').value;
+            let types = [type1];
+            if (type2 && type2 !== type1) {
+                types.push(type2);
+            }
+
+            const statsObj = {
+                hp: parseInt(document.getElementById('statHp').value),
+                attack: parseInt(document.getElementById('statAttack').value),
+                defense: parseInt(document.getElementById('statDefense').value),
+                power: parseInt(document.getElementById('statPower').value),
+                resistance: parseInt(document.getElementById('statResistance').value),
+                speed: parseInt(document.getElementById('statSpeed').value)
+            };
+
+            if (editingWildkinId) {
+                const index = wildkinList.findIndex(m => m.id === editingWildkinId);
+                if (index !== -1) {
+                    wildkinList[index].number = document.getElementById('addNumber').value;
+                    wildkinList[index].name = document.getElementById('addName').value;
+                    wildkinList[index].types = types;
+                    wildkinList[index].img = imageSrc;
+                    wildkinList[index].description = document.getElementById('addDesc').value;
+                    wildkinList[index].stats = statsObj;
+                }
+            } else {
+                const newWildkin = {
+                    id: Date.now(),
+                    number: document.getElementById('addNumber').value,
+                    name: document.getElementById('addName').value,
+                    types: types,
+                    img: imageSrc,
+                    description: document.getElementById('addDesc').value,
+                    stats: statsObj
+                };
+                wildkinList.push(newWildkin);
+            }
+
+            try {
+                localStorage.setItem('kindex_wildkin', JSON.stringify(wildkinList));
+                filterWildkin();
+                closeModalDirect('addModal');
+            } catch (err) {
+                alert("Storage limit reached! Even with compression, browser storage is full.");
+            }
+        }
+
+        function handleGenericFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('genName').value;
+            const desc = document.getElementById('genDesc').value;
+
+            try {
+                if (activeGenericType === 'move') {
+                    const newItem = {
+                        id: Date.now(),
+                        name: name,
+                        type: document.getElementById('genType').value,
+                        category: document.getElementById('genCategory').value,
+                        power: document.getElementById('genPower').value || '—',
+                        accuracy: document.getElementById('genAccuracy').value || '—',
+                        desc: desc
+                    };
+                    movesList.push(newItem);
+                    localStorage.setItem('kindex_moves', JSON.stringify(movesList));
+                    renderMovesTable();
+                } else if (activeGenericType === 'ability') {
+                    const newItem = {
+                        id: Date.now(),
+                        name: name,
+                        desc: desc
+                    };
+                    abilitiesList.push(newItem);
+                    localStorage.setItem('kindex_abilities', JSON.stringify(abilitiesList));
+                    renderAbilitiesTable();
+                } else if (activeGenericType === 'item') {
+                    const newItem = {
+                        id: Date.now(),
+                        name: name,
+                        category: document.getElementById('genCategory').value,
+                        desc: desc
+                    };
+                    itemsList.push(newItem);
+                    localStorage.setItem('kindex_items', JSON.stringify(itemsList));
+                    renderItemsTable();
+                }
+                closeModalDirect('genericAddModal');
+            } catch (err) {
+                alert("Storage error.");
+            }
+        }
+
+        // Initial Render
+        renderGrid(wildkinList);
+        renderMovesTable();
+        renderAbilitiesTable();
+        renderItemsTable();
+        checkAdminAccess();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WilderKin - Catalog of Wildkin</title>
+    <style>
+        :root {
+            --bg-deep: #0b0f0d;
+            --bg-panel: #151c17;
+            --bg-card: #1c2620;
+            --text-main: #e2e8df;
+            --text-muted: #9aa89e;
+            --primary: #c59b27; /* Aged Rune Gold */
+            --primary-hover: #dfb236;
+            --danger: #a93226;
+            --danger-hover: #c0392b;
+            --border-iron: #2b3830;
+            --shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            --radius: 12px;
+            --accent-green: #2ecc71;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px 40px 80px;
+            background-image: radial-gradient(circle at 50% 0%, #17221b 0%, var(--bg-deep) 70%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            transition: padding-left 0.3s ease;
+        }
+
+        body.sidebar-open {
+            padding-left: 360px;
+        }
+
+        /* Sidebar Navigation / Tools Drawer */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border-iron);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+            z-index: 1001;
+            transition: left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        body.sidebar-open .sidebar {
+            left: 0;
+        }
+
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--bg-panel);
+            color: var(--primary);
+            border: 1px solid var(--border-iron);
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1002;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+        }
+
+        .sidebar-toggle-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg-card);
+        }
+
+        .sidebar h3 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 1.3rem;
+            border-bottom: 1px solid var(--border-iron);
+            padding-bottom: 12px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-section label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logo-img {
+            max-width: 420px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto 10px auto;
+            display: block;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+        }
+
+        .subheader-catalog {
+            color: var(--accent-green);
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 25px 0;
+        }
+
+        /* Horizontal Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab-btn {
+            background-color: var(--bg-panel);
+            color: var(--text-muted);
+            border: 1px solid var(--border-iron);
+            padding: 10px 24px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-tab-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: var(--bg-card);
+        }
+
+        .nav-tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), #947119);
+            color: #111412;
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(197, 155, 39, 0.3);
+        }
+
+        .admin-controls {
+            display: none;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-filter-row {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"], select, input[type="number"], input[type="file"] {
+            padding: 14px 20px;
+            font-size: 1rem;
+            border: 1px solid var(--border-iron);
+            border-radius: var(--radius);
+            outline: none;
+            transition: all 0.2s ease;
+            width: 300px;
+            max-width: 100%;
+            background: var(--bg-panel);
+            color: var(--text-main);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        input[type="text"]:focus, select:focus, input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.2), inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Custom Visual Type Filter Bar */
+        .type-filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            padding: 15px;
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-iron);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .type-filter-pill {
+            background: var(--bg-card);
+            color: var(--text-muted);
+            border: 1px solid var(--border-iron);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .type-filter-pill:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .type-filter-pill.active {
+            outline: 3px solid #fff;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: #111412;
+            border: none;
+            padding: 12px 22px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-iron);
+        }
+        .btn-outline:hover {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+
+        /* Tab Content Sections */
+        .tab-section {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-section.active {
+            display: block;
+        }
+
+        .tab-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .tab-header-flex h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            border: 1px solid var(--border-iron);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(197, 155, 39, 0.15);
+            border-color: var(--primary);
+        }
+
+        .card img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.4));
+        }
+
+        .card:hover img {
+            transform: scale(1.06);
+        }
+
+        .card .number {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .card h3 {
+            margin: 6px 0 14px 0;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #111412;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Generic table layout for Moves, Abilities, Items */
+        .compendium-table-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--border-iron);
+        }
+
+        .compendium-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .compendium-table th {
+            background-color: var(--bg-panel);
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 16px 20px;
+            border-bottom: 2px solid var(--border-iron);
+        }
+
+        .compendium-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-iron);
+            color: var(--text-main);
+        }
+
+        .compendium-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .compendium-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .admin-action-cell {
+            text-align: right;
+            display: none;
+        }
+
+        /* Type Colors */
+        .type-flame { background-color: #d35400; color: #fff; }
+        .type-tide { background-color: #2980b9; color: #fff; }
+        .type-bloom { background-color: #27ae60; color: #fff; }
+        .type-spark { background-color: #f1c40f; color: #111412; }
+        .type-frost { background-color: #7fb3d5; color: #111412; }
+        .type-gale { background-color: #3498db; color: #fff; }
+        .type-stone { background-color: #8c6239; color: #fff; }
+        .type-iron { background-color: #bdc3c7; color: #111412; }
+        .type-venom { background-color: #8e44ad; color: #fff; }
+        .type-swarm { background-color: #2ecc71; color: #111412; }
+        .type-might { background-color: #c0392b; color: #fff; }
+        .type-psyche { background-color: #e84393; color: #fff; }
+        .type-shade { background-color: #2c3e50; color: #fff; }
+        .type-ghoul { background-color: #512e5f; color: #fff; }
+        .type-fae { background-color: #ff9ff3; color: #111412; }
+        .type-neutral { background-color: #7f8c8d; color: #fff; }
+        .type-wyrm { background-color: #6c5ce7; color: #fff; }
+        .type-cosmic { background-color: #341f97; color: #fff; }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 12, 0.85);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+            backdrop-filter: blur(6px);
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-iron);
+            padding: 35px;
+            border-radius: calc(var(--radius) + 4px);
+            max-width: 850px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 20px rgba(197, 155, 39, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+            color: var(--text-main);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-iron);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .close-btn:hover {
+            background: var(--bg-card);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Two-Column Detail Modal Layout */
+        .modal-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media(min-width: 768px) {
+            .modal-grid-layout {
+                grid-template-columns: 260px 1fr;
+                align-items: start;
+            }
+        }
+
+        .modal-left-pane {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            background: var(--bg-panel);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-iron);
+        }
+
+        .modal-left-pane img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            margin: 0 auto 15px auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+        }
+
+        .modal-right-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .lore-box {
+            background: var(--bg-panel);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-iron);
+            text-align: left;
+        }
+
+        .lore-box h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stats-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            text-align: left;
+        }
+
+        @media(min-width: 480px) {
+            .stats-wrapper {
+                grid-template-columns: 1fr 180px;
+                align-items: center;
+            }
+        }
+
+        .stats-container {
+            background: var(--bg-panel);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-iron);
+        }
+
+        .stats-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stats-container h4 {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bst-badge {
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+            border: 1px solid rgba(197, 155, 39, 0.3);
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-name {
+            width: 90px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            width: 35px;
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .stat-bar-bg {
+            flex-grow: 1;
+            background-color: var(--border-iron);
+            border-radius: 6px;
+            height: 8px;
+            margin-left: 12px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #947119, var(--primary));
+            border-radius: 6px;
+        }
+
+        .chart-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-iron);
+        }
+
+        .radar-svg text {
+            font-size: 8px;
+            font-weight: bold;
+            fill: var(--text-muted);
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid var(--border-iron);
+            border-radius: var(--radius);
+            font-family: inherit;
+            resize: vertical;
+            height: 80px;
+            outline: none;
+            background: var(--bg-panel);
+            color: var(--text-main);
+        }
+
+        .stats-inputs {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-iron);
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .slider-row label {
+            width: 90px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0 !important;
+        }
+
+        .slider-row input[type="range"] {
+            flex-grow: 1;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .slider-row span {
+            width: 35px;
+            text-align: right;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body id="pageBody">
+
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">📁</button>
+
+    <!-- Side Bar Drawer -->
+    <aside class="sidebar" id="sidebarDrawer">
+        <h3>Catalog Tools</h3>
+        
+        <div class="sidebar-section">
+            <label>World Map / Reference Viewer</label>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 12px 0;">Open the interactive viewer pop-up to inspect the world map or upload a new one.</p>
+            <button class="btn" style="width: 100%; font-size: 0.9rem;" onclick="openMapModal()">Open Map Viewer</button>
+        </div>
+
+        <div class="sidebar-section" style="margin-top: auto;">
+            <button class="btn btn-outline" style="width: 100%; font-size: 0.85rem;" onclick="toggleSidebar()">Close Drawer</button>
+        </div>
+    </aside>
+
+    <header>
+        <!-- WilderKin Logo -->
+        <img src="WilderKin Logo.webp" alt="WilderKin Logo" class="logo-img">
+        <h2 class="subheader-catalog">Catalog of Wildkin</h2>
+        
+        <!-- Horizontal Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="nav-tab-btn active" onclick="switchTab('wildkin', this)">Wildkin</button>
+            <button class="nav-tab-btn" onclick="switchTab('moves', this)">Moves</button>
+            <button class="nav-tab-btn" onclick="switchTab('abilities', this)">Abilities</button>
+            <button class="nav-tab-btn" onclick="switchTab('items', this)">Items</button>
+        </nav>
+
+        <div class="admin-controls" id="adminControls">
+            <button class="btn" onclick="openAddModal()">+ Add New Wildkin</button>
+        </div>
+    </header>
+
+    <!-- Tab 1: Wildkin Catalog -->
+    <div id="tab-wildkin" class="tab-section active">
+        <div class="controls">
+            <div class="search-filter-row">
+                <input type="text" id="searchInput" placeholder="Search by name or number (#001)..." oninput="filterWildkin()">
+            </div>
+            
+            <!-- Custom Colored Type Filter Bar -->
+            <div class="type-filter-bar" id="typeFilterBar">
+                <div class="type-filter-pill active" onclick="selectTypeFilter('', this)" style="background: var(--bg-card); color: var(--text-main);">All Types</div>
+                <div class="type-filter-pill type-flame" onclick="selectTypeFilter('Flame', this)">Flame</div>
+                <div class="type-filter-pill type-tide" onclick="selectTypeFilter('Tide', this)">Tide</div>
+                <div class="type-filter-pill type-bloom" onclick="selectTypeFilter('Bloom', this)">Bloom</div>
+                <div class="type-filter-pill type-spark" onclick="selectTypeFilter('Spark', this)">Spark</div>
+                <div class="type-filter-pill type-frost" onclick="selectTypeFilter('Frost', this)">Frost</div>
+                <div class="type-filter-pill type-gale" onclick="selectTypeFilter('Gale', this)">Gale</div>
+                <div class="type-filter-pill type-stone" onclick="selectTypeFilter('Stone', this)">Stone</div>
+                <div class="type-filter-pill type-iron" onclick="selectTypeFilter('Iron', this)">Iron</div>
+                <div class="type-filter-pill type-venom" onclick="selectTypeFilter('Venom', this)">Venom</div>
+                <div class="type-filter-pill type-swarm" onclick="selectTypeFilter('Swarm', this)">Swarm</div>
+                <div class="type-filter-pill type-might" onclick="selectTypeFilter('Might', this)">Might</div>
+                <div class="type-filter-pill type-psyche" onclick="selectTypeFilter('Psyche', this)">Psyche</div>
+                <div class="type-filter-pill type-shade" onclick="selectTypeFilter('Shade', this)">Shade</div>
+                <div class="type-filter-pill type-ghoul" onclick="selectTypeFilter('Ghoul', this)">Ghoul</div>
+                <div class="type-filter-pill type-fae" onclick="selectTypeFilter('Fae', this)">Fae</div>
+                <div class="type-filter-pill type-neutral" onclick="selectTypeFilter('Neutral', this)">Neutral</div>
+                <div class="type-filter-pill type-wyrm" onclick="selectTypeFilter('Wyrm', this)">Wyrm</div>
+                <div class="type-filter-pill type-cosmic" onclick="selectTypeFilter('Cosmic', this)">Cosmic</div>
+            </div>
+        </div>
+        <div class="grid" id="wildkinGrid"></div>
+    </div>
+
+    <!-- Tab 2: Moves Compendium -->
+    <div id="tab-moves" class="tab-section">
+        <div class="tab-header-flex">
+            <h2>Moves Compendium</h2>
+            <button class="btn admin-only-btn" style="display:none;" onclick="openAddModalGeneric('move')">+ Add New Move</button>
+        </div>
+        <div class="compendium-table-wrapper">
+            <table class="compendium-table">
+                <thead>
+                    <tr>
+                        <th>Move Name</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Power</th>
+                        <th>Accuracy</th>
+                        <th>Description</th>
+                        <th class="admin-action-cell" style="display:none;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="movesTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 3: Abilities Compendium -->
+    <div id="tab-abilities" class="tab-section">
+        <div class="tab-header-flex">
+            <h2>Abilities Compendium</h2>
+            <button class="btn admin-only-btn" style="display:none;" onclick="openAddModalGeneric('ability')">+ Add New Ability</button>
+        </div>
+        <div class="compendium-table-wrapper">
+            <table class="compendium-table">
+                <thead>
+                    <tr>
+                        <th>Ability Name</th>
+                        <th>Effect Description</th>
+                        <th class="admin-action-cell" style="display:none;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="abilitiesTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 4: Items Compendium -->
+    <div id="tab-items" class="tab-section">
+        <div class="tab-header-flex">
+            <h2>Items Compendium</h2>
+            <button class="btn admin-only-btn" style="display:none;" onclick="openAddModalGeneric('item')">+ Add New Item</button>
+        </div>
+        <div class="compendium-table-wrapper">
+            <table class="compendium-table">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Effect Description</th>
+                        <th class="admin-action-cell" style="display:none;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Map / Image Viewer Popup Modal -->
+    <div class="modal" id="mapModal" onclick="closeModal(event, 'mapModal')">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 900px; text-align: center;">
+            <button class="close-btn" onclick="closeModalDirect('mapModal')">&times;</button>
+            <h2 style="margin-top: 0; color: var(--primary);">Wildkin World Map</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Explore the regions where wildkin roam or upload a custom map image below.</p>
+            
+            <div style="margin-bottom: 20px;">
+                <label class="btn btn-outline" style="cursor: pointer; display: inline-block; font-size: 0.9rem;">
+                    📁 Upload / Change Map Image
+                    <input type="file" id="mapImageFile" accept="image/*" style="display: none;" onchange="loadCustomMap(event)">
+                </label>
+            </div>
+
+            <div style="background: var(--bg-panel); border: 1px solid var(--border-iron); border-radius: var(--radius); padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 350px;">
+                <img id="mapDisplayImg" src="" alt="World Map" style="max-width: 100%; max-height: 550px; object-fit: contain; border-radius: 8px; display: none;">
+                <div id="mapPlaceholderText" style="color: var(--text-muted); font-style: italic;">No map image uploaded yet. Click "Upload / Change Map Image" above to add one!</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal (Wildkin) -->
+    <div class="modal" id="detailModal" onclick="closeModal(event, 'detailModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModalDirect('detailModal')">&times;</button>
+            
+            <div class="modal-grid-layout">
+                <div class="modal-left-pane">
+                    <img id="modalImg" src="" alt="" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                    <p id="modalNumber" class="number" style="margin: 0 0 4px 0;"></p>
+                    <h2 id="modalName" style="margin: 0 0 12px 0; font-size: 1.8rem; color: var(--text-main);"></h2>
+                    <div id="modalBadges" class="badges" style="justify-content: flex-start; margin-bottom: 15px;"></div>
+
+                    <div id="adminActionButtons" style="width: 100%; display: none; margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+                        <button class="btn" style="width: 100%; background: var(--bg-card); color: var(--primary); border: 1px solid var(--primary);" onclick="openEditModal()">Edit Wildkin</button>
+                        <button class="btn btn-danger" style="width: 100%;" onclick="deleteCurrentWildkin()">Delete Wildkin</button>
+                    </div>
+                </div>
+
+                <div class="modal-right-pane">
+                    <div class="lore-box">
+                        <h4>Abilities, Lore & Details</h4>
+                        <p id="modalDescription" style="color: var(--text-main); font-size: 0.95rem; margin: 0; line-height: 1.6;"></p>
+                    </div>
+
+                    <div class="stats-wrapper">
+                        <div class="stats-container">
+                            <div class="stats-header-flex">
+                                <h4>Base Stats</h4>
+                                <span id="modalBst" class="bst-badge">BST: 0</span>
+                            </div>
+                            <div id="modalStats"></div>
+                        </div>
+                        <div class="chart-box">
+                            <svg id="modalRadarChart" class="radar-svg" width="180" height="180" viewBox="0 0 200 200"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add / Edit Wildkin Modal -->
+    <div class="modal" id="addModal" onclick="closeModal(event, 'addModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModalDirect('addModal')">&times;</button>
+            <h2 id="addModalHeader" style="margin-top: 0; color: var(--primary);">Add New Wildkin</h2>
+            <form id="addWildkinForm" onsubmit="handleFormSubmit(event)">
+                <div class="form-group">
+                    <label for="addNumber">Dex Number (e.g. #004)</label>
+                    <input type="text" id="addNumber" required placeholder="#004">
+                </div>
+                <div class="form-group">
+                    <label for="addName">Name</label>
+                    <input type="text" id="addName" required placeholder="Wildkin Name">
+                </div>
+                <div class="form-group">
+                    <label for="addType1">Primary Type</label>
+                    <select id="addType1" required>
+                        <option value="Flame">Flame</option>
+                        <option value="Tide">Tide</option>
+                        <option value="Bloom">Bloom</option>
+                        <option value="Spark">Spark</option>
+                        <option value="Frost">Frost</option>
+                        <option value="Gale">Gale</option>
+                        <option value="Stone">Stone</option>
+                        <option value="Iron">Iron</option>
+                        <option value="Venom">Venom</option>
+                        <option value="Swarm">Swarm</option>
+                        <option value="Might">Might</option>
+                        <option value="Psyche">Psyche</option>
+                        <option value="Shade">Shade</option>
+                        <option value="Ghoul">Ghoul</option>
+                        <option value="Fae">Fae</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="Wyrm">Wyrm</option>
+                        <option value="Cosmic">Cosmic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addType2">Secondary Type (Optional)</label>
+                    <select id="addType2">
+                        <option value="">None</option>
+                        <option value="Flame">Flame</option>
+                        <option value="Tide">Tide</option>
+                        <option value="Bloom">Bloom</option>
+                        <option value="Spark">Spark</option>
+                        <option value="Frost">Frost</option>
+                        <option value="Gale">Gale</option>
+                        <option value="Stone">Stone</option>
+                        <option value="Iron">Iron</option>
+                        <option value="Venom">Venom</option>
+                        <option value="Swarm">Swarm</option>
+                        <option value="Might">Might</option>
+                        <option value="Psyche">Psyche</option>
+                        <option value="Shade">Shade</option>
+                        <option value="Ghoul">Ghoul</option>
+                        <option value="Fae">Fae</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="Wyrm">Wyrm</option>
+                        <option value="Cosmic">Cosmic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addImageFile">Upload Image from Device <span id="imageOptionalNote" style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Optional when editing)</span></label>
+                    <input type="file" id="addImageFile" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="addDesc">Abilities, Lore & Details</label>
+                    <textarea id="addDesc" required placeholder="Write lore, abilities, and other details here..."></textarea>
+                </div>
+
+                <div class="stats-header-flex" style="margin-bottom: 5px;">
+                    <label style="font-weight: 700; font-size: 0.85rem; color: var(--text-main);">Adjust Base Stats</label>
+                    <span id="formBst" class="bst-badge">BST: 300</span>
+                </div>
+                <div class="stats-inputs">
+                    <div class="slider-row">
+                        <label for="statHp">HP</label>
+                        <input type="range" id="statHp" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valHp">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statAttack">Attack</label>
+                        <input type="range" id="statAttack" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valAttack">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statDefense">Defense</label>
+                        <input type="range" id="statDefense" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valDefense">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statPower">Power</label>
+                        <input type="range" id="statPower" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valPower">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statResistance">Resistance</label>
+                        <input type="range" id="statResistance" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valResistance">50</span>
+                    </div>
+                    <div class="slider-row">
+                        <label for="statSpeed">Speed</label>
+                        <input type="range" id="statSpeed" min="1" max="255" value="50" oninput="updateFormStats()">
+                        <span id="valSpeed">50</span>
+                    </div>
+                    
+                    <div style="margin-top: 15px; display: flex; justify-content: center;">
+                        <svg id="formRadarChart" class="radar-svg" width="180" height="180" viewBox="0 0 200 200"></svg>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="addSubmitBtn" style="width: 100%;">Save Wildkin</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generic Add Modal (Moves, Abilities, Items) -->
+    <div class="modal" id="genericAddModal" onclick="closeModal(event, 'genericAddModal')">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px;">
+            <button class="close-btn" onclick="closeModalDirect('genericAddModal')">&times;</button>
+            <h2 id="genericModalTitle" style="margin-top: 0; color: var(--primary);">Add New Entry</h2>
+            <form id="genericAddForm" onsubmit="handleGenericFormSubmit(event)">
+                <div class="form-group">
+                    <label for="genName">Name</label>
+                    <input type="text" id="genName" required placeholder="Item/Move/Ability Name">
+                </div>
+                <div class="form-group" id="genGroupType" style="display:none;">
+                    <label for="genType">Type</label>
+                    <select id="genType">
+                        <option value="Flame">Flame</option>
+                        <option value="Tide">Tide</option>
+                        <option value="Bloom">Bloom</option>
+                        <option value="Spark">Spark</option>
+                        <option value="Frost">Frost</option>
+                        <option value="Gale">Gale</option>
+                        <option value="Stone">Stone</option>
+                        <option value="Iron">Iron</option>
+                        <option value="Venom">Venom</option>
+                        <option value="Swarm">Swarm</option>
+                        <option value="Might">Might</option>
+                        <option value="Psyche">Psyche</option>
+                        <option value="Shade">Shade</option>
+                        <option value="Ghoul">Ghoul</option>
+                        <option value="Fae">Fae</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="Wyrm">Wyrm</option>
+                        <option value="Cosmic">Cosmic</option>
+                    </select>
+                </div>
+                <div class="form-group" id="genGroupCategory" style="display:none;">
+                    <label for="genCategory">Category</label>
+                    <select id="genCategory">
+                        <option value="Physical">Physical</option>
+                        <option value="Power">Power</option>
+                        <option value="Status">Status</option>
+                        <option value="Held Item">Held Item</option>
+                        <option value="Consumable">Consumable</option>
+                    </select>
+                </div>
+                <div class="form-group" id="genGroupPower" style="display:none;">
+                    <label for="genPower">Power</label>
+                    <input type="text" id="genPower" placeholder="e.g. 85 or —">
+                </div>
+                <div class="form-group" id="genGroupAccuracy" style="display:none;">
+                    <label for="genAccuracy">Accuracy</label>
+                    <input type="text" id="genAccuracy" placeholder="e.g. 100% or —">
+                </div>
+                <div class="form-group">
+                    <label for="genDesc">Description / Effect</label>
+                    <textarea id="genDesc" required placeholder="Write effect description..."></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Save Entry</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // PERMANENT DEFAULT ENTRIES (Mapped to root directory files)
+        // ==========================================
+        const defaultWildkin = [
+            {
+                id: 1,
+                number: "#001",
+                name: "Flitlick",
+                types: ["Flame"],
+                img: "Flitlick.webp",
+                description: "The fire serpent. It uses the spear-like blade on its tail to channel intense heat, while its armored head plate protects it from backfiring embers.",
+                stats: { hp: 45, attack: 65, defense: 50, power: 60, resistance: 45, speed: 85 }
+            },
+            {
+                id: 2,
+                number: "#002",
+                name: "Slinkmail",
+                types: ["Flame", "Iron"],
+                img: "Slinkmail.webp",
+                description: "The evolved form of Flitlick. Its flexible body is tightly woven with segmented metallic plating, allowing it to coil tightly and withstand heavy impacts.",
+                stats: { hp: 65, attack: 85, defense: 75, power: 70, resistance: 60, speed: 95 }
+            },
+            {
+                id: 3,
+                number: "#003",
+                name: "Serphelme",
+                types: ["Flame", "Iron"],
+                img: "Serphelme.webp",
+                description: "The final evolution stage. It commands a heavy, broad-sword tail capable of searing through boulders, wearing a crown-like crest of forged steel.",
+                stats: { hp: 85, attack: 115, defense: 95, power: 85, resistance: 80, speed: 105 }
+            },
+            {
+                id: 4,
+                number: "#004",
+                name: "Mossnout",
+                types: ["Bloom"],
+                img: "Mossnout.png",
+                description: "A gentle forest dweller covered in lush moss. It absorbs sunlight through its snout to nourish the budding flower on its back.",
+                stats: { hp: 45, attack: 49, defense: 49, power: 65, resistance: 65, speed: 45 }
+            },
+            {
+                id: 5,
+                number: "#005",
+                name: "Hedghex",
+                types: ["Bloom", "Fae"],
+                img: "Hedghex.png",
+                description: "Sprouting mystical flora along its spine, Hedghex glows faintly at twilight and uses soothing spores to calm aggressive woodland creatures.",
+                stats: { hp: 60, attack: 62, defense: 63, power: 80, resistance: 80, speed: 60 }
+            },
+            {
+                id: 6,
+                number: "#006",
+                name: "Verdanthe",
+                types: ["Bloom", "Fae"],
+                img: "Verdanthe.png",
+                description: "The guardian of ancient groves. Its blooming canopy can alter local weather patterns, bringing gentle, life-giving rain to withered lands.",
+                stats: { hp: 80, attack: 82, defense: 83, power: 100, resistance: 100, speed: 80 }
+            },
+            {
+                id: 7,
+                number: "#007",
+                name: "Caskub",
+                types: ["Tide"],
+                img: "Caskub.png",
+                description: "A playful aquatic cub that stores fresh mountain spring water in its natural cask-like shell for long journeys across arid valleys.",
+                stats: { hp: 44, attack: 48, defense: 65, power: 50, resistance: 64, speed: 43 }
+            },
+            {
+                id: 8,
+                number: "#008",
+                name: "Kegpawt",
+                types: ["Tide", "Might"],
+                img: "Kegpawt.png",
+                description: "Boasting immense physical strength, Kegpawt can hurl pressurized jets of water with enough force to splinter solid timber.",
+                stats: { hp: 59, attack: 63, defense: 80, power: 65, resistance: 80, speed: 58 }
+            },
+            {
+                id: 9,
+                number: "#009",
+                name: "Urszooka",
+                types: ["Tide", "Might"],
+                img: "Ursabrew.png",
+                description: "An apex river titan. It harnesses powerful water pressure cannons built into its armored arms to blast rivals into submission.",
+                stats: { hp: 79, attack: 83, defense: 100, power: 85, resistance: 105, speed: 78 }
+            },
+            {
+                id: 10,
+                number: "#010",
+                name: "Flintch",
+                types: ["Gale"],
+                img: "Flintch.png",
+                description: "A swift avian scout that rides high-altitude thermal updrafts, striking silently from the clouds with razor-sharp wing feathers.",
+                stats: { hp: 40, attack: 45, defense: 40, power: 35, resistance: 35, speed: 56 }
+            },
+            {
+                id: 11,
+                number: "#011",
+                name: "Pickrow",
+                types: ["Gale"],
+                img: "Pickrow.png",
+                description: "Known for its sharp intellect and keen eyesight, Pickrow hoards shiny trinkets in hidden nests high up on sheer cliff faces.",
+                stats: { hp: 63, attack: 60, defense: 55, power: 50, resistance: 50, speed: 71 }
+            },
+            {
+                id: 12,
+                number: "#012",
+                name: "Axiraptor",
+                types: ["Gale", "Iron"],
+                img: "Axiraptor.png",
+                description: "A formidable aerial predator featuring metallic talons and aerodynamic steel-tipped wings capable of supersonic dives.",
+                stats: { hp: 83, attack: 90, defense: 80, power: 75, resistance: 70, speed: 101 }
+            },
+            {
+                id: 13,
+                number: "#013",
+                name: "Platite",
+                types: ["Swarm"],
+                img: "Bug Guy.png",
+                description: "A communal insectoid creature that gathers in massive synchronized colonies, forming shimmering tactical formations in the underbrush.",
+                stats: { hp: 45, attack: 35, defense: 30, power: 20, resistance: 20, speed: 50 }
+            },
+            {
+                id: 14,
+                number: "#014",
+                name: "Visora",
+                types: ["Swarm", "Iron"],
+                img: "Bg guy 2.png",
+                description: "An armored insectoid scout that surveys its territory using specialized visor-like eye plating, defending its colony with fierce loyalty.",
+                stats: { hp: 60, attack: 55, defense: 65, power: 45, resistance: 45, speed: 70 }
+            },
+            {
+                id: 15,
+                number: "#015",
+                name: "Blasticore",
+                types: ["Swarm", "Iron"],
+                img: "Blasticore.jpg",
+                description: "Features heavy defensive shields built into its carapace, allowing it to withstand high-impact collisions while charging down rivals.",
+                stats: { hp: 75, attack: 80, defense: 90, power: 60, resistance: 60, speed: 65 }
+            },
+            {
+                id: 16,
+                number: "#016",
+                name: "Cragite",
+                types: ["Stone"],
+                img: "cragite test.jpg",
+                description: "A small, secretive cavern dweller hiding beneath a coarse, earth-toned hood carved from natural rock and soil strata.",
+                stats: { hp: 50, attack: 55, defense: 60, power: 40, resistance: 50, speed: 40 }
+            },
+            {
+                id: 17,
+                number: "#017",
+                name: "Koboulder",
+                types: ["Stone"],
+                img: "Koboulder.jpg",
+                description: "A mischievous stone-bearer that hoards jagged mineral chunks in a weathered pouch, hurling heavy projectiles at intruders.",
+                stats: { hp: 70, attack: 75, defense: 80, power: 60, resistance: 70, speed: 60 }
+            },
+            {
+                id: 18,
+                number: "#018",
+                name: "Gobrune",
+                types: ["Stone", "Psyche"],
+                img: "Gobrune.jpg",
+                description: "Etched with ancient psychic runes across its stony armor, Gobrune manipulates heavy mineral boulders with pure telekinetic force.",
+                stats: { hp: 90, attack: 95, defense: 100, power: 80, resistance: 90, speed: 75 }
+            },
+            {
+                id: 19,
+                number: "#019",
+                name: "Princelit",
+                types: ["Gale", "Neutral"],
+                img: "Princelit.png",
+                description: "A proud fledgling bird with sharp instincts, training its wings daily for soaring flights across the open highlands.",
+                stats: { hp: 45, attack: 50, defense: 45, power: 45, resistance: 45, speed: 65 }
+            },
+            {
+                id: 20,
+                number: "#020",
+                name: "Heirwing",
+                types: ["Gale", "Neutral"],
+                img: "bird middle.webp",
+                description: "Spreading its developing wings wide, Heirwing catches high-altitude wind currents to patrol expansive territorial boundaries.",
+                stats: { hp: 65, attack: 70, defense: 60, power: 65, resistance: 60, speed: 85 }
+            },
+            {
+                id: 21,
+                number: "#021",
+                name: "Empereagle",
+                types: ["Gale", "Neutral"],
+                img: "empereagle wing down bg remove.jpg",
                 description: "The majestic sovereign of the skies, crowned with golden plumage and ruling supreme over mountain peaks and cloudy domains.",
                 stats: { hp: 90, attack: 100, defense: 85, power: 90, resistance: 85, speed: 110 }
             }
