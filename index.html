@@ -343,6 +343,30 @@
             border-color: var(--primary);
         }
 
+        /* Card Top-Left Archetype Icon & Number layout */
+        .card-top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            padding: 0 5px;
+        }
+
+        .archetype-badge {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-iron);
+            border-radius: 6px;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 0.8rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+            title: "Combat Archetype";
+        }
+
         .card img {
             width: 140px;
             height: 140px;
@@ -1389,6 +1413,33 @@
         const ADMIN_SECRET = "Arsenal"; 
         const statLabelsMap = { hp: 'HP', attack: 'Attack', defense: 'Defense', power: 'Power', resistance: 'Resistance', speed: 'Speed' };
 
+        function getHighestStatArchetype(stats) {
+            let highestKey = 'attack';
+            let maxVal = -1;
+            for (const [k, v] of Object.entries(stats)) {
+                if (v > maxVal) {
+                    maxVal = v;
+                    highestKey = k;
+                }
+            }
+            // Return corresponding SVG icon and label based on highest stat
+            switch(highestKey) {
+                case 'attack':
+                    return { icon: '⚔️', label: 'Physical Attacker' };
+                case 'power':
+                    return { icon: '🔮', label: 'Special Power' };
+                case 'defense':
+                case 'resistance':
+                    return { icon: '🛡️', label: 'Tank / Defensive' };
+                case 'speed':
+                    return { icon: '⚡', label: 'Swift Striker' };
+                case 'hp':
+                    return { icon: '❤️', label: 'Endurance / HP' };
+                default:
+                    return { icon: '⭐', label: 'Balanced' };
+            }
+        }
+
         function toggleSidebar() {
             const body = document.getElementById('pageBody');
             body.classList.toggle('sidebar-open');
@@ -1476,9 +1527,13 @@
                 card.onclick = () => openModal(mon);
 
                 const badgesHtml = mon.types.map(t => `<span class="badge type-${t.toLowerCase()}">${t}</span>`).join('');
+                const archetype = getHighestStatArchetype(mon.stats || {hp:50, attack:50, defense:50, power:50, resistance:50, speed:50});
 
                 card.innerHTML = `
-                    <span class="number">${mon.number}</span>
+                    <div class="card-top-header">
+                        <div class="archetype-badge" title="${archetype.label}">${archetype.icon}</div>
+                        <span class="number">${mon.number}</span>
+                    </div>
                     <img src="${mon.img}" alt="${mon.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
                     <h3>${mon.name}</h3>
                     <div class="badges">${badgesHtml}</div>
