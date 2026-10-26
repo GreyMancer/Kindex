@@ -452,6 +452,7 @@
         .type-neutral { background-color: #7f8c8d; color: #fff; }
         .type-wyrm { background-color: #6c5ce7; color: #fff; }
         .type-cosmic { background-color: #341f97; color: #fff; }
+        .type-earth { background-color: #a0522d; color: #fff; }
 
         .modal {
             display: none;
@@ -780,6 +781,7 @@
                 <div class="type-filter-pill type-neutral" onclick="selectTypeFilter('Neutral', this)">Neutral</div>
                 <div class="type-filter-pill type-wyrm" onclick="selectTypeFilter('Wyrm', this)">Wyrm</div>
                 <div class="type-filter-pill type-cosmic" onclick="selectTypeFilter('Cosmic', this)">Cosmic</div>
+                <div class="type-filter-pill type-earth" onclick="selectTypeFilter('Earth', this)">Earth</div>
             </div>
         </div>
         <div class="grid" id="wildkinGrid"></div>
@@ -941,6 +943,7 @@
                         <option value="Neutral">Neutral</option>
                         <option value="Wyrm">Wyrm</option>
                         <option value="Cosmic">Cosmic</option>
+                        <option value="Earth">Earth</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -965,6 +968,7 @@
                         <option value="Neutral">Neutral</option>
                         <option value="Wyrm">Wyrm</option>
                         <option value="Cosmic">Cosmic</option>
+                        <option value="Earth">Earth</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1052,6 +1056,7 @@
                         <option value="Neutral">Neutral</option>
                         <option value="Wyrm">Wyrm</option>
                         <option value="Cosmic">Cosmic</option>
+                        <option value="Earth">Earth</option>
                     </select>
                 </div>
                 <div class="form-group" id="genGroupCategory" style="display:none;">
@@ -1312,7 +1317,7 @@
                 id: 26,
                 number: "#026",
                 name: "Stagthorn",
-                types: ["Bloom", "Might"],
+                types: ["Bloom", "Earth"],
                 img: "Stagthorn.png",
                 description: "The majestic forest ruler. Its massive leafy antlers can channel natural energy to shield its herd from danger.",
                 stats: { hp: 80, attack: 110, defense: 85, power: 75, resistance: 80, speed: 90 }
