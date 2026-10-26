@@ -750,7 +750,7 @@
             <button class="nav-tab-btn" onclick="switchTab('items', this)">Items</button>
         </nav>
 
-        <div class="admin-controls" id="adminControls">
+        <div class="admin-controls" id="adminControls" style="display:none;">
             <button class="btn" onclick="openAddModal()">+ Add New Wildkin</button>
         </div>
     </header>
@@ -880,7 +880,7 @@
                     <h2 id="modalName" style="margin: 0 0 12px 0; font-size: 1.8rem; color: var(--text-main);"></h2>
                     <div id="modalBadges" class="badges" style="justify-content: flex-start; margin-bottom: 15px;"></div>
 
-                    <div id="adminActionButtons" style="width: 100%; display: none; margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+                    <div id="adminActionButtons" style="width: 100%; display: none; margin-top: auto; flex-direction: column; gap: 8px;">
                         <button class="btn" style="width: 100%; background: var(--bg-card); color: var(--primary); border: 1px solid var(--primary);" onclick="openEditModal()">Edit Wildkin</button>
                         <button class="btn btn-danger" style="width: 100%;" onclick="deleteCurrentWildkin()">Delete Wildkin</button>
                     </div>
